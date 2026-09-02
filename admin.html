@@ -552,6 +552,88 @@
             document.getElementById('bmnForm').reset();
             document.getElementById('file-status').style.display = 'none';
         }
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 1. MASUKKAN CONFIG FIREBASE YANG SAMA DI SINI
+        const firebaseConfig = {
+            apiKey: "API_KEY_ANDA",
+            authDomain: "PROJECT_ID.firebaseapp.com",
+            projectId: "PROJECT_ID",
+            storageBucket: "PROJECT_ID.appspot.com",
+            messagingSenderId: "SENDER_ID",
+            appId: "APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 2. Variabel penampung Foto Base64
+        let base64Foto = "";
+
+        // Fungsi mengubah foto jadi text (Base64) agar bisa disimpan di Firestore
+        function previewFile(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64Foto = e.target.result; // Simpan hasil konversi
+                    document.getElementById('file-status').style.display = 'block';
+                    document.getElementById('file-status').innerHTML = '<i class="fas fa-check-circle"></i> Foto siap diupload';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 3. Update Fungsi Simpan Barang
+        function handleSaveItem(e) {
+            e.preventDefault();
+            
+            // Ambil nilai dari inputan form
+            // Pastikan Anda menambahkan atribut id pada input di form HTML Anda
+            // Contoh: <input type="text" id="inputNamaBarang" ...>
+            const namaBarang = document.getElementById('inputNamaBarang').value;
+            const merkBarang = document.getElementById('inputMerkBarang').value;
+            const ruangan = document.getElementById('ruanganSelect').value;
+            const kondisi = document.getElementById('inputKondisi').value;
+
+            if(!ruangan) {
+                alert("Pilih ruangan terlebih dahulu!");
+                return;
+            }
+
+            // Ubah teks tombol jadi loading
+            const btnSubmit = document.querySelector('#bmnForm button[type="submit"]');
+            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            btnSubmit.disabled = true;
+
+            // Simpan ke Firestore Firebase
+            db.collection("bmn_items").add({
+                nama: namaBarang,
+                merk: merkBarang,
+                ruangan: ruangan,
+                kondisi: kondisi,
+                foto: base64Foto, // Menyimpan foto dalam format Base64
+                waktu_input: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then((docRef) => {
+                alert("Data berhasil disimpan ke Database!");
+                document.getElementById('bmnForm').reset();
+                document.getElementById('file-status').style.display = 'none';
+                base64Foto = ""; // Reset foto
+            })
+            .catch((error) => {
+                console.error("Error adding document: ", error);
+                alert("Gagal menyimpan data!");
+            })
+            .finally(() => {
+                // Kembalikan tombol seperti semula
+                btnSubmit.innerHTML = '<i class="fas fa-save"></i> Simpan Data Barang';
+                btnSubmit.disabled = false;
+            });
+        }
+        
+        // ... (sisakan fungsi login dan tab bawaan admin.html di bawah sini) ...
     </script>
 </body>
 </html>
