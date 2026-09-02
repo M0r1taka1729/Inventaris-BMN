@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin BMN - Terintegrasi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #1e40af;
+            --secondary: #3b82f6;
+            --background: #f1f5f9;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        /* Login Layout */
+        .login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .login-card {
+            background: var(--surface);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .login-card.shake { animation: shake 0.4s ease-in-out; }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Admin Dashboard Layout */
+        .admin-dashboard { display: none; animation: fadeInUp 0.5s ease-out; }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.8);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-logout:hover { background: var(--danger); }
+
+        /* Admin Navigation Tabs */
+        .admin-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 5% 0;
+        }
+
+        .nav-btn {
+            background: white;
+            color: var(--text-light);
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(30, 64, 175, 0.2);
+        }
+
+        /* Container & Cards */
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 5%;
+        }
+
+        .tab-content { display: none; animation: fadeInUp 0.4s ease-out; }
+        .tab-content.active { display: block; }
+
+        .card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Forms */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .form-row > .form-group { flex: 1; min-width: 200px; }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary);
+            background: white;
+        }
+
+        /* Camera / File Split */
+        .upload-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .upload-box {
+            flex: 1;
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .upload-box:hover { border-color: var(--secondary); background: #eff6ff; }
+        .upload-box i { font-size: 1.5rem; color: var(--secondary); margin-bottom: 0.5rem; }
+        .upload-box span { display: block; font-size: 0.85rem; font-weight: 500; }
+        .upload-box input[type="file"] {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+
+        .btn-edit { background: var(--warning); color: white; border: none; padding: 0.5rem; border-radius: 6px; cursor: pointer; }
+        .btn-delete { background: var(--danger); color: white; border: none; padding: 0.5rem; border-radius: 6px; cursor: pointer; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; font-size: 0.9rem; color: var(--text-light); }
+    </style>
+</head>
+<body>
+
+    <!-- HALAMAN LOGIN -->
+    <div id="loginSection" class="login-wrapper">
+        <div class="login-card" id="loginCard">
+            <div class="login-header">
+                <i class="fas fa-user-shield"></i>
+                <h2>Admin BMN</h2>
+                <p style="font-size: 0.85rem; color: var(--text-light);">Lapas Kelas IIB Arga Makmur</p>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+                <p id="errorMsg" style="color: var(--danger); font-size: 0.85rem; display: none; text-align: center;">Username/Password salah!</p>
+                <button type="submit" class="btn-primary" style="margin-top: 1rem;">Masuk Admin</button>
+                <a href="index.html" style="display: block; text-align: center; margin-top: 1rem; text-decoration: none; font-size: 0.85rem; color: var(--text-light);">Kembali ke Halaman Publik</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- DASHBOARD ADMIN -->
+    <div id="adminDashboard" class="admin-dashboard">
+        <header>
+            <div>
+                <h2><i class="fas fa-user-gear"></i> Panel Admin BMN</h2>
+            </div>
+            <div class="header-actions">
+                <a href="index.html" style="color: white; text-decoration: none; font-size: 0.9rem;"><i class="fas fa-eye"></i> View Publik</a>
+                <button class="btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+            </div>
+        </header>
+
+        <!-- Menu Navigasi Admin -->
+        <div class="admin-nav">
+            <button class="nav-btn active" onclick="switchAdminTab('input-barang')"><i class="fas fa-box-open"></i> Kelola Barang</button>
+            <button class="nav-btn" onclick="switchAdminTab('kelola-ruangan')"><i class="fas fa-door-open"></i> Kelola Ruangan</button>
+        </div>
+
+        <div class="container">
+            <!-- TAB 1: INPUT BARANG -->
+            <div id="input-barang" class="tab-content active">
+                <div class="card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary);"><i class="fas fa-plus-circle"></i> Input Data Barang BMN</h3>
+                    <form id="bmnForm" onsubmit="handleSaveItem(event)">
+                        <div class="form-group">
+                            <label>Nama Barang</label>
+                            <input type="text" class="form-control" placeholder="Contoh: Meja Kerja" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Merk / Tipe</label>
+                            <input type="text" class="form-control" placeholder="Contoh: Olympic / Kayu Jati" required>
+                        </div>
+                        
+                        <!-- Dropdown ini akan otomatis terisi dari Daftar Ruangan -->
+                        <div class="form-group">
+                            <label>Lokasi Ruangan (Terintegrasi)</label>
+                            <select id="ruanganSelect" class="form-control" required>
+                                <option value="">-- Data Ruangan Kosong --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Kondisi Barang</label>
+                            <select class="form-control" required>
+                                <option value="Baik">Baik</option>
+                                <option value="Rusak Ringan">Rusak Ringan</option>
+                                <option value="Rusak Berat">Rusak Berat</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Foto Barang (Pilih Sumber)</label>
+                            <div class="upload-options">
+                                <!-- Tombol Kamera Langsung -->
+                                <div class="upload-box">
+                                    <i class="fas fa-camera"></i>
+                                    <span>Buka Kamera</span>
+                                    <!-- Atribut capture="environment" untuk memaksa buka kamera belakang di HP -->
+                                    <input type="file" accept="image/*" capture="environment" onchange="previewFile(this)">
+                                </div>
+                                <!-- Tombol Pilih dari Galeri/File -->
+                                <div class="upload-box">
+                                    <i class="fas fa-folder-open"></i>
+                                    <span>Pilih dari Galeri</span>
+                                    <input type="file" accept="image/*" onchange="previewFile(this)">
+                                </div>
+                            </div>
+                            <p id="file-status" style="font-size: 0.8rem; color: var(--success); margin-top: 0.5rem; display: none;"><i class="fas fa-check-circle"></i> Foto berhasil dipilih</p>
+                        </div>
+
+                        <button type="submit" class="btn-primary" style="margin-top: 1rem;"><i class="fas fa-save"></i> Simpan Data Barang</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB 2: KELOLA RUANGAN -->
+            <div id="kelola-ruangan" class="tab-content">
+                <div class="card" style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary);" id="roomFormTitle"><i class="fas fa-door-open"></i> Tambah Ruangan Baru</h3>
+                    <form id="roomForm" onsubmit="saveRoom(event)">
+                        <input type="hidden" id="roomId">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nama Ruangan</label>
+                                <input type="text" id="roomName" class="form-control" placeholder="Contoh: Ruang Kalapas" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Luas Ruangan (m²)</label>
+                                <input type="number" id="roomSize" class="form-control" placeholder="Contoh: 24" required>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button type="submit" class="btn-primary" id="btnSaveRoom">Simpan Ruangan</button>
+                            <button type="button" class="btn-primary" style="background: var(--text-light); display: none;" id="btnCancelEdit" onclick="resetRoomForm()">Batal Edit</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card" style="overflow-x: auto;">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary);"><i class="fas fa-list"></i> Daftar Ruangan Terdaftar</h3>
+                    <table id="roomTable">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Ruangan</th>
+                                <th>Luas</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data akan diisi oleh JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. AUTENTIKASI ---
+        const USER_ADMIN = "bmnlapas";
+        const PASS_ADMIN = "L7pasarma#";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('bmn_admin_session') === 'active') {
+                showDashboard();
+            }
+        });
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const userIn = document.getElementById('username').value.trim();
+            const passIn = document.getElementById('password').value;
+            if (userIn === USER_ADMIN && passIn === PASS_ADMIN) {
+                sessionStorage.setItem('bmn_admin_session', 'active');
+                showDashboard();
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+                document.getElementById('loginCard').classList.add('shake');
+                setTimeout(() => document.getElementById('loginCard').classList.remove('shake'), 400);
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            loadRoomsData(); // Muat data ruangan saat login berhasil
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('bmn_admin_session');
+            location.reload();
+        }
+
+        // --- 2. NAVIGASI TAB ADMIN ---
+        function switchAdminTab(tabId) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function previewFile(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('file-status').style.display = 'block';
+            }
+        }
+
+        // --- 3. SISTEM KELOLA RUANGAN (CRUD via LocalStorage) ---
+        // Data Default (Jika belum ada di LocalStorage)
+        let defaultRooms = [
+            { id: 169000001, name: "Ruang Kalapas", size: "24" },
+            { id: 169000002, name: "Ruang Tata Usaha", size: "40" },
+            { id: 169000003, name: "Aula", size: "120" }
+        ];
+
+        let rooms = [];
+
+        function loadRoomsData() {
+            const savedRooms = localStorage.getItem('bmn_rooms_db');
+            if (savedRooms) {
+                rooms = JSON.parse(savedRooms);
+            } else {
+                rooms = defaultRooms;
+                saveToStorage();
+            }
+            renderRoomTable();
+            renderRoomDropdown();
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('bmn_rooms_db', JSON.stringify(rooms));
+        }
+
+        // Render Data ke Table (Tab 2)
+        function renderRoomTable() {
+            const tbody = document.querySelector('#roomTable tbody');
+            tbody.innerHTML = '';
+            
+            if (rooms.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b;">Belum ada ruangan yang ditambahkan</td></tr>';
+                return;
+            }
+
+            rooms.forEach((room, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td style="font-weight: 500;">${room.name}</td>
+                        <td>${room.size} m²</td>
+                        <td>
+                            <button class="btn-edit" onclick="editRoom(${room.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="btn-delete" onclick="deleteRoom(${room.id})" title="Hapus"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Render Data ke Dropdown Select (Tab 1) - Integrasi!
+        function renderRoomDropdown() {
+            const select = document.getElementById('ruanganSelect');
+            select.innerHTML = '<option value="">-- Pilih Ruangan --</option>';
+            rooms.forEach(room => {
+                select.innerHTML += `<option value="${room.name}">${room.name}</option>`;
+            });
+        }
+
+        // Tambah / Update Ruangan
+        function saveRoom(e) {
+            e.preventDefault();
+            const idInput = document.getElementById('roomId').value;
+            const nameInput = document.getElementById('roomName').value;
+            const sizeInput = document.getElementById('roomSize').value;
+
+            if (idInput) {
+                // Proses Edit
+                const index = rooms.findIndex(r => r.id == idInput);
+                if (index !== -1) {
+                    rooms[index].name = nameInput;
+                    rooms[index].size = sizeInput;
+                    alert("Data Ruangan berhasil diupdate!");
+                }
+            } else {
+                // Proses Tambah Baru
+                const newRoom = {
+                    id: Date.now(), // Buat ID unik berdasarkan timestamp
+                    name: nameInput,
+                    size: sizeInput
+                };
+                rooms.push(newRoom);
+                alert("Ruangan Baru berhasil ditambahkan!");
+            }
+
+            saveToStorage();
+            loadRoomsData(); // Refresh UI
+            resetRoomForm();
+        }
+
+        function editRoom(id) {
+            const room = rooms.find(r => r.id === id);
+            if (room) {
+                document.getElementById('roomId').value = room.id;
+                document.getElementById('roomName').value = room.name;
+                document.getElementById('roomSize').value = room.size;
+                
+                document.getElementById('roomFormTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Data Ruangan';
+                document.getElementById('btnSaveRoom').textContent = 'Update Ruangan';
+                document.getElementById('btnCancelEdit').style.display = 'block';
+                
+                // Scroll ke atas (ke form)
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function deleteRoom(id) {
+            const room = rooms.find(r => r.id === id);
+            if (confirm(`Yakin ingin menghapus ruangan "${room.name}"? Data yang dihapus akan hilang dari sistem.`)) {
+                rooms = rooms.filter(r => r.id !== id);
+                saveToStorage();
+                loadRoomsData();
+            }
+        }
+
+        function resetRoomForm() {
+            document.getElementById('roomForm').reset();
+            document.getElementById('roomId').value = '';
+            document.getElementById('roomFormTitle').innerHTML = '<i class="fas fa-door-open"></i> Tambah Ruangan Baru';
+            document.getElementById('btnSaveRoom').textContent = 'Simpan Ruangan';
+            document.getElementById('btnCancelEdit').style.display = 'none';
+        }
+
+        function handleSaveItem(e) {
+            e.preventDefault();
+            alert('Data Barang BMN Berhasil Disimpan di Ruangan ' + document.getElementById('ruanganSelect').value + '!');
+            document.getElementById('bmnForm').reset();
+            document.getElementById('file-status').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
