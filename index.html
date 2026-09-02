@@ -234,7 +234,81 @@
         </div>
     </div>
 
+    <script src= "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js""></script>
+    <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js"></script>
+
     <script>
+        // 1. MASUKKAN CONFIG FIREBASE ANDA DI SINI
+        const firebaseConfig = {
+            apiKey: "AIzaSyB0qOgDA7xq1hP5KkuDyFf8nAJyFAMvkRc",
+            authDomain: "bmn-lapas-arma.firebaseapp.com",
+            projectId: "bmn-lapas-arma",
+            storageBucket: "bmn-lapas-arma.firebasestorage.app",
+            messagingSenderId: "928672297876",
+            appId: "1:928672297876:web:418f0f959d105b1fe5d581"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 2. Fungsi Mengambil Data BMN dari Firebase
+        function loadDataFromFirebase() {
+            const tableBody = document.querySelector('#bmnTable tbody');
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Memuat data dari database...</td></tr>';
+
+            db.collection("bmn_items").get().then((querySnapshot) => {
+                tableBody.innerHTML = ''; // Kosongkan tabel
+                
+                if (querySnapshot.empty) {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada data barang</td></tr>';
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    
+                    // Tentukan warna badge berdasarkan kondisi
+                    let badgeClass = 'badge-baik';
+                    if(data.kondisi === 'Rusak Ringan') badgeClass = 'badge-rusak-ringan';
+                    if(data.kondisi === 'Rusak Berat') badgeClass = 'badge-rusak-berat';
+
+                    // Buat baris tabel baru
+                    const row = `
+                        <tr data-ruangan="${data.ruangan}">
+                            <td><img src="${data.foto || 'https://via.placeholder.com/50?text=No+Img'}" class="item-img" alt="${data.nama}"></td>
+                            <td>${data.nama}</td>
+                            <td>${data.merk}</td>
+                            <td>${data.ruangan}</td>
+                            <td><span class="badge ${badgeClass}">${data.kondisi}</span></td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+
+                // Setelah data selesai dimuat, jalankan filter barcode (jika ada)
+                cekBarcodeDanFilter();
+            }).catch((error) => {
+                console.error("Error mengambil data: ", error);
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Gagal memuat data</td></tr>';
+            });
+        }
+
+        // 3. Fungsi Filter dan Barcode
+        function cekBarcodeDanFilter() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const ruanganDariBarcode = urlParams.get('ruangan');
+            const filterDropdown = document.getElementById('ruanganFilter');
+
+            if (ruanganDariBarcode) {
+                let optionExists = Array.from(filterDropdown.options).some(opt => opt.value === ruanganDariBarcode);
+                if (optionExists) {
+                    filterDropdown.value = ruanganDariBarcode;
+                }
+            }
+            filterTable();
+        }
+
         function filterTable() {
             const selectedRuangan = document.getElementById('ruanganFilter').value;
             const rows = document.querySelectorAll('#bmnTable tbody tr');
@@ -254,19 +328,8 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const ruanganDariBarcode = urlParams.get('ruangan');
-
-            if (ruanganDariBarcode) {
-                const filterDropdown = document.getElementById('ruanganFilter');
-                let optionExists = Array.from(filterDropdown.options).some(opt => opt.value === ruanganDariBarcode);
-                if (optionExists) {
-                    filterDropdown.value = ruanganDariBarcode;
-                }
-            }
-            filterTable();
-        });
+        // 4. Jalankan saat halaman dibuka
+        document.addEventListener('DOMContentLoaded', loadDataFromFirebase);
     </script>
 </body>
 </html>
