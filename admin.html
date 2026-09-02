@@ -279,14 +279,15 @@
                     <form id="bmnForm" onsubmit="handleSaveItem(event)">
                         <div class="form-group">
                             <label>Nama Barang</label>
-                            <input type="text" class="form-control" placeholder="Contoh: Meja Kerja" required>
+                            <!-- PERBAIKAN: Menambahkan id="inputNamaBarang" -->
+                            <input type="text" id="inputNamaBarang" class="form-control" placeholder="Contoh: Meja Kerja" required>
                         </div>
                         <div class="form-group">
                             <label>Merk / Tipe</label>
-                            <input type="text" class="form-control" placeholder="Contoh: Olympic / Kayu Jati" required>
+                            <!-- PERBAIKAN: Menambahkan id="inputMerkBarang" -->
+                            <input type="text" id="inputMerkBarang" class="form-control" placeholder="Contoh: Olympic / Kayu Jati" required>
                         </div>
                         
-                        <!-- Dropdown ini akan otomatis terisi dari Daftar Ruangan -->
                         <div class="form-group">
                             <label>Lokasi Ruangan (Terintegrasi)</label>
                             <select id="ruanganSelect" class="form-control" required>
@@ -296,7 +297,8 @@
 
                         <div class="form-group">
                             <label>Kondisi Barang</label>
-                            <select class="form-control" required>
+                            <!-- PERBAIKAN: Menambahkan id="inputKondisi" -->
+                            <select id="inputKondisi" class="form-control" required>
                                 <option value="Baik">Baik</option>
                                 <option value="Rusak Ringan">Rusak Ringan</option>
                                 <option value="Rusak Berat">Rusak Berat</option>
@@ -306,14 +308,11 @@
                         <div class="form-group">
                             <label>Foto Barang (Pilih Sumber)</label>
                             <div class="upload-options">
-                                <!-- Tombol Kamera Langsung -->
                                 <div class="upload-box">
                                     <i class="fas fa-camera"></i>
                                     <span>Buka Kamera</span>
-                                    <!-- Atribut capture="environment" untuk memaksa buka kamera belakang di HP -->
                                     <input type="file" accept="image/*" capture="environment" onchange="previewFile(this)">
                                 </div>
-                                <!-- Tombol Pilih dari Galeri/File -->
                                 <div class="upload-box">
                                     <i class="fas fa-folder-open"></i>
                                     <span>Pilih dari Galeri</span>
@@ -371,8 +370,26 @@
         </div>
     </div>
 
+    <!-- LIBRARY FIREBASE COMPAT -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <script>
-        // --- 1. AUTENTIKASI ---
+        // --- 1. INISIALISASI FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyB0qOgDA7xq1hP5KkuDyFf8nAJyFAMvkRc",
+            authDomain: "bmn-lapas-arma.firebaseapp.com",
+            projectId: "bmn-lapas-arma",
+            storageBucket: "bmn-lapas-arma.firebasestorage.app",
+            messagingSenderId: "928672297876",
+            appId: "1:928672297876:web:418f0f959d105b1fe5d581"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+
+        // --- 2. AUTENTIKASI ---
         const USER_ADMIN = "bmnlapas";
         const PASS_ADMIN = "L7pasarma#";
 
@@ -407,7 +424,7 @@
             location.reload();
         }
 
-        // --- 2. NAVIGASI TAB ADMIN ---
+        // --- 3. NAVIGASI TAB ADMIN ---
         function switchAdminTab(tabId) {
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
@@ -416,14 +433,8 @@
             document.getElementById(tabId).classList.add('active');
         }
 
-        function previewFile(input) {
-            if (input.files && input.files[0]) {
-                document.getElementById('file-status').style.display = 'block';
-            }
-        }
 
-        // --- 3. SISTEM KELOLA RUANGAN (CRUD via LocalStorage) ---
-        // Data Default (Jika belum ada di LocalStorage)
+        // --- 4. SISTEM KELOLA RUANGAN (CRUD via LocalStorage) ---
         let defaultRooms = [
             { id: 169000001, name: "Ruang Kalapas", size: "24" },
             { id: 169000002, name: "Ruang Tata Usaha", size: "40" },
@@ -448,7 +459,6 @@
             localStorage.setItem('bmn_rooms_db', JSON.stringify(rooms));
         }
 
-        // Render Data ke Table (Tab 2)
         function renderRoomTable() {
             const tbody = document.querySelector('#roomTable tbody');
             tbody.innerHTML = '';
@@ -473,7 +483,6 @@
             });
         }
 
-        // Render Data ke Dropdown Select (Tab 1) - Integrasi!
         function renderRoomDropdown() {
             const select = document.getElementById('ruanganSelect');
             select.innerHTML = '<option value="">-- Pilih Ruangan --</option>';
@@ -482,7 +491,6 @@
             });
         }
 
-        // Tambah / Update Ruangan
         function saveRoom(e) {
             e.preventDefault();
             const idInput = document.getElementById('roomId').value;
@@ -490,7 +498,6 @@
             const sizeInput = document.getElementById('roomSize').value;
 
             if (idInput) {
-                // Proses Edit
                 const index = rooms.findIndex(r => r.id == idInput);
                 if (index !== -1) {
                     rooms[index].name = nameInput;
@@ -498,9 +505,8 @@
                     alert("Data Ruangan berhasil diupdate!");
                 }
             } else {
-                // Proses Tambah Baru
                 const newRoom = {
-                    id: Date.now(), // Buat ID unik berdasarkan timestamp
+                    id: Date.now(),
                     name: nameInput,
                     size: sizeInput
                 };
@@ -509,7 +515,7 @@
             }
 
             saveToStorage();
-            loadRoomsData(); // Refresh UI
+            loadRoomsData();
             resetRoomForm();
         }
 
@@ -524,7 +530,6 @@
                 document.getElementById('btnSaveRoom').textContent = 'Update Ruangan';
                 document.getElementById('btnCancelEdit').style.display = 'block';
                 
-                // Scroll ke atas (ke form)
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
@@ -546,38 +551,15 @@
             document.getElementById('btnCancelEdit').style.display = 'none';
         }
 
-        function handleSaveItem(e) {
-            e.preventDefault();
-            alert('Data Barang BMN Berhasil Disimpan di Ruangan ' + document.getElementById('ruanganSelect').value + '!');
-            document.getElementById('bmnForm').reset();
-            document.getElementById('file-status').style.display = 'none';
-        }
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
-    <script>
-        // 1. MASUKKAN CONFIG FIREBASE YANG SAMA DI SINI
-        const firebaseConfig = {
-            apiKey: "API_KEY_ANDA",
-            authDomain: "PROJECT_ID.firebaseapp.com",
-            projectId: "PROJECT_ID",
-            storageBucket: "PROJECT_ID.appspot.com",
-            messagingSenderId: "SENDER_ID",
-            appId: "APP_ID"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // 2. Variabel penampung Foto Base64
+        // --- 5. SISTEM SIMPAN BARANG KE FIREBASE ---
         let base64Foto = "";
 
-        // Fungsi mengubah foto jadi text (Base64) agar bisa disimpan di Firestore
         function previewFile(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    base64Foto = e.target.result; // Simpan hasil konversi
+                    base64Foto = e.target.result; // Simpan hasil konversi ke Base64
                     document.getElementById('file-status').style.display = 'block';
                     document.getElementById('file-status').innerHTML = '<i class="fas fa-check-circle"></i> Foto siap diupload';
                 };
@@ -585,13 +567,9 @@
             }
         }
 
-        // 3. Update Fungsi Simpan Barang
         function handleSaveItem(e) {
             e.preventDefault();
             
-            // Ambil nilai dari inputan form
-            // Pastikan Anda menambahkan atribut id pada input di form HTML Anda
-            // Contoh: <input type="text" id="inputNamaBarang" ...>
             const namaBarang = document.getElementById('inputNamaBarang').value;
             const merkBarang = document.getElementById('inputMerkBarang').value;
             const ruangan = document.getElementById('ruanganSelect').value;
@@ -602,38 +580,35 @@
                 return;
             }
 
-            // Ubah teks tombol jadi loading
+            // Ubah tombol submit menjadi loading
             const btnSubmit = document.querySelector('#bmnForm button[type="submit"]');
             btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
             btnSubmit.disabled = true;
 
-            // Simpan ke Firestore Firebase
+            // Simpan ke Firestore
             db.collection("bmn_items").add({
                 nama: namaBarang,
                 merk: merkBarang,
                 ruangan: ruangan,
                 kondisi: kondisi,
-                foto: base64Foto, // Menyimpan foto dalam format Base64
+                foto: base64Foto, 
                 waktu_input: firebase.firestore.FieldValue.serverTimestamp()
             })
             .then((docRef) => {
                 alert("Data berhasil disimpan ke Database!");
                 document.getElementById('bmnForm').reset();
                 document.getElementById('file-status').style.display = 'none';
-                base64Foto = ""; // Reset foto
+                base64Foto = ""; // Reset variabel foto
             })
             .catch((error) => {
                 console.error("Error adding document: ", error);
-                alert("Gagal menyimpan data!");
+                alert("Gagal menyimpan data! Pastikan internet stabil.");
             })
             .finally(() => {
-                // Kembalikan tombol seperti semula
                 btnSubmit.innerHTML = '<i class="fas fa-save"></i> Simpan Data Barang';
                 btnSubmit.disabled = false;
             });
         }
-        
-        // ... (sisakan fungsi login dan tab bawaan admin.html di bawah sini) ...
     </script>
 </body>
 </html>
