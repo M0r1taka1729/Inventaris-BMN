@@ -185,14 +185,13 @@
                 
                 <div class="filter-box">
                     <label style="font-size: 0.85rem; color: var(--text-light);"><i class="fas fa-filter"></i> Ruangan:</label>
-                    <select id="ruanganFilter" class="form-control" onchange="filterTable()">
-                        <option value="Semua">Semua Ruangan</option>
-                        <option value="Ruang Tata Usaha">Ruang Tata Usaha</option>
-                        <option value="Ruang Kalapas">Ruang Kalapas</option>
-                        <option value="Ruang KPLP">Ruang KPLP</option>
-                        <option value="Aula">Aula</option>
-                    </select>
-                </div>
+                    <div class="filter-box">
+    <label style="font-size: 0.85rem; color: var(--text-light);"><i class="fas fa-filter"></i> Ruangan:</label>
+    <select id="ruanganFilter" class="form-control" onchange="filterTable()">
+        <option value="Semua">Semua Ruangan</option>
+        <!-- Opsi lainnya akan diisi otomatis oleh JavaScript dari Firebase -->
+    </select>
+</div>
             </div>
 
             <div class="table-responsive">
