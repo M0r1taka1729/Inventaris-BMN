@@ -206,39 +206,20 @@
                             <th>Kondisi</th>
                         </tr>
                     </thead>
+                    <!-- Kosongkan isi tbody, biar Javascript yang mengisi data dari Firebase -->
                     <tbody>
-                        <tr data-ruangan="Ruang Tata Usaha">
-                            <td><img src="https://via.placeholder.com/50?text=PC" class="item-img" alt="PC"></td>
-                            <td>Komputer Desktop</td>
-                            <td>Lenovo ThinkCentre</td>
-                            <td>Ruang Tata Usaha</td>
-                            <td><span class="badge badge-baik">Baik</span></td>
-                        </tr>
-                        <tr data-ruangan="Ruang Tata Usaha">
-                            <td><img src="https://via.placeholder.com/50?text=Printer" class="item-img" alt="Printer"></td>
-                            <td>Printer Epson</td>
-                            <td>Epson L3110</td>
-                            <td>Ruang Tata Usaha</td>
-                            <td><span class="badge badge-rusak-ringan">Rusak Ringan</span></td>
-                        </tr>
-                        <tr data-ruangan="Aula">
-                            <td><img src="https://via.placeholder.com/50?text=Kursi" class="item-img" alt="Kursi"></td>
-                            <td>Kursi Susun</td>
-                            <td>Chitose</td>
-                            <td>Aula</td>
-                            <td><span class="badge badge-baik">Baik</span></td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <script src= "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js""></script>
-    <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js"></script>
+    <!-- PERBAIKAN: Gunakan library Firebase versi Compat agar sesuai dengan script di bawah -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. MASUKKAN CONFIG FIREBASE ANDA DI SINI
+        // 1. CONFIG FIREBASE ANDA
         const firebaseConfig = {
             apiKey: "AIzaSyB0qOgDA7xq1hP5KkuDyFf8nAJyFAMvkRc",
             authDomain: "bmn-lapas-arma.firebaseapp.com",
@@ -255,10 +236,10 @@
         // 2. Fungsi Mengambil Data BMN dari Firebase
         function loadDataFromFirebase() {
             const tableBody = document.querySelector('#bmnTable tbody');
-            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Memuat data dari database...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Memuat data dari database... <i class="fas fa-spinner fa-spin"></i></td></tr>';
 
             db.collection("bmn_items").get().then((querySnapshot) => {
-                tableBody.innerHTML = ''; // Kosongkan tabel
+                tableBody.innerHTML = ''; // Kosongkan tabel loading
                 
                 if (querySnapshot.empty) {
                     tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada data barang</td></tr>';
@@ -273,10 +254,13 @@
                     if(data.kondisi === 'Rusak Ringan') badgeClass = 'badge-rusak-ringan';
                     if(data.kondisi === 'Rusak Berat') badgeClass = 'badge-rusak-berat';
 
+                    // Tangani jika field foto kosong
+                    const fotoSrc = data.foto ? data.foto : 'https://via.placeholder.com/50?text=No+Img';
+
                     // Buat baris tabel baru
                     const row = `
                         <tr data-ruangan="${data.ruangan}">
-                            <td><img src="${data.foto || 'https://via.placeholder.com/50?text=No+Img'}" class="item-img" alt="${data.nama}"></td>
+                            <td><img src="${fotoSrc}" class="item-img" alt="${data.nama}"></td>
                             <td>${data.nama}</td>
                             <td>${data.merk}</td>
                             <td>${data.ruangan}</td>
@@ -290,7 +274,7 @@
                 cekBarcodeDanFilter();
             }).catch((error) => {
                 console.error("Error mengambil data: ", error);
-                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Gagal memuat data</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data dari database.</td></tr>';
             });
         }
 
