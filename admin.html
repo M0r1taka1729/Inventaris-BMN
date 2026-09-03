@@ -20,205 +20,58 @@
             --warning: #f59e0b;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background-color: var(--background);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-10px); }
-            40%, 80% { transform: translateX(10px); }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--background); color: var(--text); min-height: 100vh; }
+        
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
 
         /* Login Layout */
-        .login-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 1.5rem;
-        }
-
-        .login-card {
-            background: var(--surface);
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-            animation: fadeInUp 0.5s ease-out;
-        }
-
+        .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1.5rem; }
+        .login-card { background: var(--surface); padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 400px; animation: fadeInUp 0.5s ease-out; }
         .login-card.shake { animation: shake 0.4s ease-in-out; }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .login-header i {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
+        .login-header { text-align: center; margin-bottom: 2rem; }
+        .login-header i { font-size: 3rem; color: var(--primary); margin-bottom: 0.5rem; }
 
         /* Admin Dashboard Layout */
         .admin-dashboard { display: none; animation: fadeInUp 0.5s ease-out; }
-
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 1.5rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .btn-logout {
-            background: rgba(239, 68, 68, 0.8);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
+        header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 1.5rem 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); flex-wrap: wrap; gap: 1rem; }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        .btn-logout { background: rgba(239, 68, 68, 0.8); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s; }
         .btn-logout:hover { background: var(--danger); }
 
         /* Admin Navigation Tabs */
-        .admin-nav {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin: 2rem 5% 0;
-        }
-
-        .nav-btn {
-            background: white;
-            color: var(--text-light);
-            border: 1px solid #e2e8f0;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .nav-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 4px 10px rgba(30, 64, 175, 0.2);
-        }
+        .admin-nav { display: flex; justify-content: center; gap: 1rem; margin: 2rem 5% 0; }
+        .nav-btn { background: white; color: var(--text-light); border: 1px solid #e2e8f0; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(30, 64, 175, 0.2); }
 
         /* Container & Cards */
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 5%;
-        }
-
+        .container { max-width: 800px; margin: 2rem auto; padding: 0 5%; }
         .tab-content { display: none; animation: fadeInUp 0.4s ease-out; }
         .tab-content.active { display: block; }
-
-        .card {
-            background: var(--surface);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-        }
+        .card { background: var(--surface); border-radius: 16px; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
 
         /* Forms */
         .form-group { margin-bottom: 1.25rem; }
         .form-row { display: flex; gap: 1rem; flex-wrap: wrap; }
         .form-row > .form-group { flex: 1; min-width: 200px; }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-light);
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: #f8fafc;
-        }
-        .form-control:focus {
-            outline: none;
-            border-color: var(--secondary);
-            background: white;
-        }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-light); font-weight: 500; font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 0.75rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; transition: all 0.3s ease; background: #f8fafc; }
+        .form-control:focus { outline: none; border-color: var(--secondary); background: white; }
 
         /* Camera / File Split */
-        .upload-options {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        .upload-box {
-            flex: 1;
-            background: #f8fafc;
-            border: 2px dashed #cbd5e1;
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-            position: relative;
-            transition: all 0.2s;
-        }
+        .upload-options { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .upload-box { flex: 1; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px; padding: 1rem; text-align: center; position: relative; transition: all 0.2s; }
         .upload-box:hover { border-color: var(--secondary); background: #eff6ff; }
         .upload-box i { font-size: 1.5rem; color: var(--secondary); margin-bottom: 0.5rem; }
         .upload-box span { display: block; font-size: 0.85rem; font-weight: 500; }
-        .upload-box input[type="file"] {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; cursor: pointer;
-        }
+        .upload-box input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.3s ease; }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        .btn-edit { background: var(--warning); color: white; border: none; padding: 0.5rem; border-radius: 6px; cursor: pointer; }
+        .btn-edit { background: var(--warning); color: white; border: none; padding: 0.5rem; border-radius: 6px; cursor: pointer; margin-right: 5px;}
         .btn-delete { background: var(--danger); color: white; border: none; padding: 0.5rem; border-radius: 6px; cursor: pointer; }
 
         /* Tables */
@@ -279,17 +132,15 @@
                     <form id="bmnForm" onsubmit="handleSaveItem(event)">
                         <div class="form-group">
                             <label>Nama Barang</label>
-                            <!-- PERBAIKAN: Menambahkan id="inputNamaBarang" -->
                             <input type="text" id="inputNamaBarang" class="form-control" placeholder="Contoh: Meja Kerja" required>
                         </div>
                         <div class="form-group">
                             <label>Merk / Tipe</label>
-                            <!-- PERBAIKAN: Menambahkan id="inputMerkBarang" -->
                             <input type="text" id="inputMerkBarang" class="form-control" placeholder="Contoh: Olympic / Kayu Jati" required>
                         </div>
                         
                         <div class="form-group">
-                            <label>Lokasi Ruangan (Terintegrasi)</label>
+                            <label>Lokasi Ruangan (Terintegrasi Firebase)</label>
                             <select id="ruanganSelect" class="form-control" required>
                                 <option value="">-- Data Ruangan Kosong --</option>
                             </select>
@@ -297,7 +148,6 @@
 
                         <div class="form-group">
                             <label>Kondisi Barang</label>
-                            <!-- PERBAIKAN: Menambahkan id="inputKondisi" -->
                             <select id="inputKondisi" class="form-control" required>
                                 <option value="Baik">Baik</option>
                                 <option value="Rusak Ringan">Rusak Ringan</option>
@@ -332,7 +182,8 @@
                 <div class="card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 1.5rem; color: var(--primary);" id="roomFormTitle"><i class="fas fa-door-open"></i> Tambah Ruangan Baru</h3>
                     <form id="roomForm" onsubmit="saveRoom(event)">
-                        <input type="hidden" id="roomId">
+                        <!-- Input hidden ini sekarang menampung Doc ID dari Firebase -->
+                        <input type="hidden" id="roomId"> 
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Nama Ruangan</label>
@@ -362,7 +213,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Data akan diisi oleh JavaScript -->
+                            <!-- Data ruangan dari Firebase akan diisi di sini -->
                         </tbody>
                     </table>
                 </div>
@@ -387,7 +238,6 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-
 
         // --- 2. AUTENTIKASI ---
         const USER_ADMIN = "bmnlapas";
@@ -416,7 +266,7 @@
         function showDashboard() {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'block';
-            loadRoomsData(); // Muat data ruangan saat login berhasil
+            loadRoomsDataFromFirebase(); // Muat data ruangan dari Firebase saat login
         }
 
         function handleLogout() {
@@ -433,113 +283,130 @@
             document.getElementById(tabId).classList.add('active');
         }
 
+        // --- 4. SISTEM KELOLA RUANGAN TERINTEGRASI FIREBASE ---
+        let rooms = []; // Penampung data ruangan sementara di browser
 
-        // --- 4. SISTEM KELOLA RUANGAN (CRUD via LocalStorage) ---
-        let defaultRooms = [
-            { id: 169000001, name: "Ruang Kalapas", size: "24" },
-            { id: 169000002, name: "Ruang Tata Usaha", size: "40" },
-            { id: 169000003, name: "Aula", size: "120" }
-        ];
-
-        let rooms = [];
-
-        function loadRoomsData() {
-            const savedRooms = localStorage.getItem('bmn_rooms_db');
-            if (savedRooms) {
-                rooms = JSON.parse(savedRooms);
-            } else {
-                rooms = defaultRooms;
-                saveToStorage();
-            }
-            renderRoomTable();
-            renderRoomDropdown();
-        }
-
-        function saveToStorage() {
-            localStorage.setItem('bmn_rooms_db', JSON.stringify(rooms));
-        }
-
-        function renderRoomTable() {
+        // Fungsi Menarik Data Ruangan dari Firebase Firestore
+        function loadRoomsDataFromFirebase() {
             const tbody = document.querySelector('#roomTable tbody');
-            tbody.innerHTML = '';
-            
-            if (rooms.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b;">Belum ada ruangan yang ditambahkan</td></tr>';
-                return;
-            }
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Memuat data ruangan dari database... <i class="fas fa-spinner fa-spin"></i></td></tr>';
 
-            rooms.forEach((room, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td style="font-weight: 500;">${room.name}</td>
-                        <td>${room.size} m²</td>
-                        <td>
-                            <button class="btn-edit" onclick="editRoom(${room.id})" title="Edit"><i class="fas fa-edit"></i></button>
-                            <button class="btn-delete" onclick="deleteRoom(${room.id})" title="Hapus"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
+            db.collection("bmn_rooms").orderBy("waktu_input", "asc").get().then((querySnapshot) => {
+                rooms = []; // Kosongkan array sementara
+                tbody.innerHTML = '';
+                const select = document.getElementById('ruanganSelect');
+                select.innerHTML = '<option value="">-- Pilih Ruangan --</option>';
+
+                if (querySnapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b;">Belum ada ruangan yang ditambahkan</td></tr>';
+                    return;
+                }
+
+                let index = 1;
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const docId = doc.id; // Ambil ID Dokumen Firebase
+
+                    // Masukkan ke array sementara
+                    rooms.push({ id: docId, name: data.nama, size: data.luas });
+
+                    // Render ke Tabel
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${index}</td>
+                            <td style="font-weight: 500;">${data.nama}</td>
+                            <td>${data.luas} m²</td>
+                            <td>
+                                <button class="btn-edit" onclick="editRoom('${docId}')" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-delete" onclick="deleteRoom('${docId}', '${data.nama}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+
+                    // Render ke Dropdown di Form Input Barang
+                    select.innerHTML += `<option value="${data.nama}">${data.nama}</option>`;
+                    
+                    index++;
+                });
+            }).catch((error) => {
+                console.error("Error mengambil data ruangan: ", error);
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Gagal memuat data ruangan dari database.</td></tr>';
             });
         }
 
-        function renderRoomDropdown() {
-            const select = document.getElementById('ruanganSelect');
-            select.innerHTML = '<option value="">-- Pilih Ruangan --</option>';
-            rooms.forEach(room => {
-                select.innerHTML += `<option value="${room.name}">${room.name}</option>`;
-            });
-        }
-
+        // Fungsi Tambah / Update Ruangan ke Firebase
         function saveRoom(e) {
             e.preventDefault();
-            const idInput = document.getElementById('roomId').value;
+            const docId = document.getElementById('roomId').value;
             const nameInput = document.getElementById('roomName').value;
             const sizeInput = document.getElementById('roomSize').value;
 
-            if (idInput) {
-                const index = rooms.findIndex(r => r.id == idInput);
-                if (index !== -1) {
-                    rooms[index].name = nameInput;
-                    rooms[index].size = sizeInput;
-                    alert("Data Ruangan berhasil diupdate!");
-                }
-            } else {
-                const newRoom = {
-                    id: Date.now(),
-                    name: nameInput,
-                    size: sizeInput
-                };
-                rooms.push(newRoom);
-                alert("Ruangan Baru berhasil ditambahkan!");
-            }
+            const btnSave = document.getElementById('btnSaveRoom');
+            btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            btnSave.disabled = true;
 
-            saveToStorage();
-            loadRoomsData();
-            resetRoomForm();
+            if (docId) {
+                // Proses Edit/Update (Berubah dari Add ke Update di Firebase)
+                db.collection("bmn_rooms").doc(docId).update({
+                    nama: nameInput,
+                    luas: sizeInput
+                })
+                .then(() => {
+                    alert("Data Ruangan berhasil diupdate!");
+                    resetRoomForm();
+                    loadRoomsDataFromFirebase();
+                })
+                .catch((error) => {
+                    console.error("Error updating document: ", error);
+                    alert("Gagal update data!");
+                })
+                .finally(() => { resetBtnSave(); });
+            } else {
+                // Proses Tambah Baru (Simpan ke Firebase)
+                db.collection("bmn_rooms").add({
+                    nama: nameInput,
+                    luas: sizeInput,
+                    waktu_input: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then((docRef) => {
+                    alert("Ruangan Baru berhasil ditambahkan ke Database!");
+                    resetRoomForm();
+                    loadRoomsDataFromFirebase();
+                })
+                .catch((error) => {
+                    console.error("Error adding document: ", error);
+                    alert("Gagal menambah ruangan!");
+                })
+                .finally(() => { resetBtnSave(); });
+            }
         }
 
-        function editRoom(id) {
-            const room = rooms.find(r => r.id === id);
+        // Siapkan form untuk Edit
+        function editRoom(docId) {
+            const room = rooms.find(r => r.id === docId);
             if (room) {
                 document.getElementById('roomId').value = room.id;
                 document.getElementById('roomName').value = room.name;
                 document.getElementById('roomSize').value = room.size;
                 
                 document.getElementById('roomFormTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Data Ruangan';
-                document.getElementById('btnSaveRoom').textContent = 'Update Ruangan';
+                document.getElementById('btnSaveRoom').innerHTML = '<i class="fas fa-save"></i> Update Ruangan';
                 document.getElementById('btnCancelEdit').style.display = 'block';
                 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
-        function deleteRoom(id) {
-            const room = rooms.find(r => r.id === id);
-            if (confirm(`Yakin ingin menghapus ruangan "${room.name}"? Data yang dihapus akan hilang dari sistem.`)) {
-                rooms = rooms.filter(r => r.id !== id);
-                saveToStorage();
-                loadRoomsData();
+        // Hapus Ruangan dari Firebase
+        function deleteRoom(docId, roomName) {
+            if (confirm(`Yakin ingin menghapus ruangan "${roomName}"? Data ini akan terhapus dari Database secara permanen.`)) {
+                db.collection("bmn_rooms").doc(docId).delete().then(() => {
+                    alert("Ruangan berhasil dihapus.");
+                    loadRoomsDataFromFirebase();
+                }).catch((error) => {
+                    console.error("Error removing document: ", error);
+                    alert("Gagal menghapus ruangan!");
+                });
             }
         }
 
@@ -547,8 +414,14 @@
             document.getElementById('roomForm').reset();
             document.getElementById('roomId').value = '';
             document.getElementById('roomFormTitle').innerHTML = '<i class="fas fa-door-open"></i> Tambah Ruangan Baru';
-            document.getElementById('btnSaveRoom').textContent = 'Simpan Ruangan';
+            resetBtnSave();
             document.getElementById('btnCancelEdit').style.display = 'none';
+        }
+        
+        function resetBtnSave() {
+            const btnSave = document.getElementById('btnSaveRoom');
+            btnSave.innerHTML = 'Simpan Ruangan';
+            btnSave.disabled = false;
         }
 
 
@@ -580,12 +453,10 @@
                 return;
             }
 
-            // Ubah tombol submit menjadi loading
             const btnSubmit = document.querySelector('#bmnForm button[type="submit"]');
             btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
             btnSubmit.disabled = true;
 
-            // Simpan ke Firestore
             db.collection("bmn_items").add({
                 nama: namaBarang,
                 merk: merkBarang,
@@ -598,7 +469,7 @@
                 alert("Data berhasil disimpan ke Database!");
                 document.getElementById('bmnForm').reset();
                 document.getElementById('file-status').style.display = 'none';
-                base64Foto = ""; // Reset variabel foto
+                base64Foto = ""; 
             })
             .catch((error) => {
                 console.error("Error adding document: ", error);
