@@ -20,152 +20,47 @@
             --warning: #f59e0b;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--background); color: var(--text); min-height: 100vh; }
 
-        body {
-            background-color: var(--background);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
         header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 1.5rem 5%;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            color: white; padding: 1.5rem 5%; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        .header-title h1 {
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-        
-        .header-title p {
-            font-size: 0.85rem;
-            opacity: 0.9;
-        }
+        .header-title h1 { font-size: 1.4rem; font-weight: 600; }
+        .header-title p { font-size: 0.85rem; opacity: 0.9; }
 
         .admin-link {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.2); color: white; padding: 0.5rem 1rem;
+            border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: all 0.3s ease;
         }
+        .admin-link:hover { background: white; color: var(--primary); }
 
-        .admin-link:hover {
-            background: white;
-            color: var(--primary);
-        }
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 5%; }
+        .card { background: var(--surface); border-radius: 16px; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); animation: fadeInUp 0.5s ease-out; }
 
-        .container {
-            max-width: 1100px;
-            margin: 2rem auto;
-            padding: 0 5%;
-        }
+        .table-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        
+        .filter-box { display: flex; align-items: center; gap: 0.5rem; background: #f8fafc; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .form-control { padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; outline: none; }
 
-        .card {
-            background: var(--surface);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            animation: fadeInUp 0.5s ease-out;
-        }
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; font-weight: 600; color: var(--text-light); }
+        tr { transition: all 0.2s ease; }
+        tr:hover { background: #f1f5f9; }
 
-        .table-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .filter-box {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: #f8fafc;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .form-control {
-            padding: 0.5rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            outline: none;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        th {
-            background: #f8fafc;
-            font-weight: 600;
-            color: var(--text-light);
-        }
-
-        tr {
-            transition: all 0.2s ease;
-        }
-
-        tr:hover {
-            background: #f1f5f9;
-        }
-
-        .badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 999px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
+        .badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 500; }
         .badge-baik { background: #d1fae5; color: var(--success); }
         .badge-rusak-ringan { background: #fef3c7; color: var(--warning); }
         .badge-rusak-berat { background: #fee2e2; color: var(--danger); }
-
-        .item-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
+        .item-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
     </style>
 </head>
 <body>
@@ -185,13 +80,11 @@
                 
                 <div class="filter-box">
                     <label style="font-size: 0.85rem; color: var(--text-light);"><i class="fas fa-filter"></i> Ruangan:</label>
-                    <div class="filter-box">
-    <label style="font-size: 0.85rem; color: var(--text-light);"><i class="fas fa-filter"></i> Ruangan:</label>
-    <select id="ruanganFilter" class="form-control" onchange="filterTable()">
-        <option value="Semua">Semua Ruangan</option>
-        <!-- Opsi lainnya akan diisi otomatis oleh JavaScript dari Firebase -->
-    </select>
-</div>
+                    <select id="ruanganFilter" class="form-control" onchange="filterTable()">
+                        <option value="Semua">Semua Ruangan</option>
+                        <!-- Opsi ruangan akan diisi otomatis dari Firestore bmn_rooms -->
+                    </select>
+                </div>
             </div>
 
             <div class="table-responsive">
@@ -205,20 +98,20 @@
                             <th>Kondisi</th>
                         </tr>
                     </thead>
-                    <!-- Kosongkan isi tbody, biar Javascript yang mengisi data dari Firebase -->
                     <tbody>
+                        <!-- Data BMN akan diisi dari Firestore bmn_items -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- PERBAIKAN: Gunakan library Firebase versi Compat agar sesuai dengan script di bawah -->
+    <!-- LIBRARY FIREBASE COMPAT -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. CONFIG FIREBASE ANDA
+        // 1. CONFIG FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyB0qOgDA7xq1hP5KkuDyFf8nAJyFAMvkRc",
             authDomain: "bmn-lapas-arma.firebaseapp.com",
@@ -228,35 +121,51 @@
             appId: "1:928672297876:web:418f0f959d105b1fe5d581"
         };
 
-        // Inisialisasi Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 2. Fungsi Mengambil Data BMN dari Firebase
-        function loadDataFromFirebase() {
-            const tableBody = document.querySelector('#bmnTable tbody');
-            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Memuat data dari database... <i class="fas fa-spinner fa-spin"></i></td></tr>';
+        // 2. Fungsi Mengambil Daftar Ruangan untuk Filter Dropdown
+        function loadRoomsForFilter() {
+            const filterDropdown = document.getElementById('ruanganFilter');
+            filterDropdown.innerHTML = '<option value="Semua">Semua Ruangan</option>'; // Reset
 
-            db.collection("bmn_items").get().then((querySnapshot) => {
-                tableBody.innerHTML = ''; // Kosongkan tabel loading
+            // Tarik data dari koleksi bmn_rooms
+            db.collection("bmn_rooms").orderBy("waktu_input", "asc").get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const roomData = doc.data();
+                    filterDropdown.innerHTML += `<option value="${roomData.nama}">${roomData.nama}</option>`;
+                });
+                // Lanjut muat data barang setelah ruangan selesai dimuat
+                loadDataItemsFromFirebase();
+            }).catch((error) => {
+                console.error("Gagal menarik data ruangan: ", error);
+                loadDataItemsFromFirebase(); // Tetap muat barang meski ruangan gagal
+            });
+        }
+
+
+        // 3. Fungsi Mengambil Data Barang BMN
+        function loadDataItemsFromFirebase() {
+            const tableBody = document.querySelector('#bmnTable tbody');
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Memuat data barang... <i class="fas fa-spinner fa-spin"></i></td></tr>';
+
+            db.collection("bmn_items").orderBy("waktu_input", "desc").get().then((querySnapshot) => {
+                tableBody.innerHTML = ''; 
                 
                 if (querySnapshot.empty) {
-                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada data barang</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#64748b;">Belum ada data barang yang terinput</td></tr>';
                     return;
                 }
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     
-                    // Tentukan warna badge berdasarkan kondisi
                     let badgeClass = 'badge-baik';
                     if(data.kondisi === 'Rusak Ringan') badgeClass = 'badge-rusak-ringan';
                     if(data.kondisi === 'Rusak Berat') badgeClass = 'badge-rusak-berat';
 
-                    // Tangani jika field foto kosong
                     const fotoSrc = data.foto ? data.foto : 'https://via.placeholder.com/50?text=No+Img';
 
-                    // Buat baris tabel baru
                     const row = `
                         <tr data-ruangan="${data.ruangan}">
                             <td><img src="${fotoSrc}" class="item-img" alt="${data.nama}"></td>
@@ -269,21 +178,22 @@
                     tableBody.innerHTML += row;
                 });
 
-                // Setelah data selesai dimuat, jalankan filter barcode (jika ada)
                 cekBarcodeDanFilter();
             }).catch((error) => {
-                console.error("Error mengambil data: ", error);
-                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data dari database.</td></tr>';
+                console.error("Error mengambil data barang: ", error);
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data barang.</td></tr>';
             });
         }
 
-        // 3. Fungsi Filter dan Barcode
+
+        // 4. Fungsi Cek Barcode (URL Parameter)
         function cekBarcodeDanFilter() {
             const urlParams = new URLSearchParams(window.location.search);
             const ruanganDariBarcode = urlParams.get('ruangan');
             const filterDropdown = document.getElementById('ruanganFilter');
 
             if (ruanganDariBarcode) {
+                // Pilih dropdown sesuai param URL jika ada di pilihan
                 let optionExists = Array.from(filterDropdown.options).some(opt => opt.value === ruanganDariBarcode);
                 if (optionExists) {
                     filterDropdown.value = ruanganDariBarcode;
@@ -292,6 +202,8 @@
             filterTable();
         }
 
+
+        // 5. Fungsi Filter Tabel Animasi
         function filterTable() {
             const selectedRuangan = document.getElementById('ruanganFilter').value;
             const rows = document.querySelectorAll('#bmnTable tbody tr');
@@ -311,8 +223,8 @@
             });
         }
 
-        // 4. Jalankan saat halaman dibuka
-        document.addEventListener('DOMContentLoaded', loadDataFromFirebase);
+        // 6. Jalankan Pertama Kali (Mulai dari memuat ruangan)
+        document.addEventListener('DOMContentLoaded', loadRoomsForFilter);
     </script>
 </body>
 </html>
