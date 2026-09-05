@@ -139,11 +139,18 @@
                             <input type="text" id="inputMerkBarang" class="form-control" placeholder="Contoh: Olympic / Kayu Jati" required>
                         </div>
                         
-                        <div class="form-group">
-                            <label>Lokasi Ruangan (Terintegrasi Firebase)</label>
-                            <select id="ruanganSelect" class="form-control" required>
-                                <option value="">-- Data Ruangan Kosong --</option>
-                            </select>
+                        <!-- Penambahan Form Row untuk Jumlah Barang dan Lokasi -->
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 0 0 120px;">
+                                <label>Jumlah</label>
+                                <input type="number" id="inputJumlahBarang" class="form-control" min="1" placeholder="Misal: 5" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Lokasi Ruangan</label>
+                                <select id="ruanganSelect" class="form-control" required>
+                                    <option value="">-- Data Ruangan Kosong --</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -182,7 +189,6 @@
                 <div class="card" style="margin-bottom: 2rem;">
                     <h3 style="margin-bottom: 1.5rem; color: var(--primary);" id="roomFormTitle"><i class="fas fa-door-open"></i> Tambah Ruangan Baru</h3>
                     <form id="roomForm" onsubmit="saveRoom(event)">
-                        <!-- Input hidden ini sekarang menampung Doc ID dari Firebase -->
                         <input type="hidden" id="roomId"> 
                         <div class="form-row">
                             <div class="form-group">
@@ -445,6 +451,7 @@
             
             const namaBarang = document.getElementById('inputNamaBarang').value;
             const merkBarang = document.getElementById('inputMerkBarang').value;
+            const jumlahBarang = document.getElementById('inputJumlahBarang').value; // Penarikan data jumlah
             const ruangan = document.getElementById('ruanganSelect').value;
             const kondisi = document.getElementById('inputKondisi').value;
 
@@ -457,9 +464,11 @@
             btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
             btnSubmit.disabled = true;
 
+            // Simpan ke Firestore (beserta Jumlah)
             db.collection("bmn_items").add({
                 nama: namaBarang,
                 merk: merkBarang,
+                jumlah: Number(jumlahBarang), // Pastikan formatnya angka (Number)
                 ruangan: ruangan,
                 kondisi: kondisi,
                 foto: base64Foto, 
