@@ -352,7 +352,7 @@
             btnSave.disabled = true;
 
             if (docId) {
-                // Proses Edit/Update (Berubah dari Add ke Update di Firebase)
+                // Proses Edit/Update
                 db.collection("bmn_rooms").doc(docId).update({
                     nama: nameInput,
                     luas: sizeInput
@@ -368,7 +368,7 @@
                 })
                 .finally(() => { resetBtnSave(); });
             } else {
-                // Proses Tambah Baru (Simpan ke Firebase)
+                // Proses Tambah Baru
                 db.collection("bmn_rooms").add({
                     nama: nameInput,
                     luas: sizeInput,
@@ -431,18 +431,56 @@
         }
 
 
-        // --- 5. SISTEM SIMPAN BARANG KE FIREBASE ---
+        // --- 5. SISTEM SIMPAN BARANG KE FIREBASE (Dengan Kompresi Foto) ---
         let base64Foto = "";
 
+        // Fungsi Kompresi Foto Otomatis
         function previewFile(input) {
             if (input.files && input.files[0]) {
+                const file = input.files[0];
                 const reader = new FileReader();
+                
+                // Tampilkan status loading kompresi
+                document.getElementById('file-status').style.display = 'block';
+                document.getElementById('file-status').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses & mengompres foto...';
+
                 reader.onload = function(e) {
-                    base64Foto = e.target.result; // Simpan hasil konversi ke Base64
-                    document.getElementById('file-status').style.display = 'block';
-                    document.getElementById('file-status').innerHTML = '<i class="fas fa-check-circle"></i> Foto siap diupload';
+                    const img = new Image();
+                    img.src = e.target.result;
+                    
+                    img.onload = function() {
+                        const canvas = document.createElement("canvas");
+                        
+                        // Maksimal lebar/tinggi 800px agar tidak memberatkan database
+                        const MAX_WIDTH = 800; 
+                        const MAX_HEIGHT = 800;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Konversi ke format JPEG kualitas 70%
+                        base64Foto = canvas.toDataURL("image/jpeg", 0.7);
+                        
+                        document.getElementById('file-status').innerHTML = '<i class="fas fa-check-circle"></i> Foto berhasil dikompres & siap diupload';
+                    }
                 };
-                reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(file);
             }
         }
 
@@ -451,7 +489,7 @@
             
             const namaBarang = document.getElementById('inputNamaBarang').value;
             const merkBarang = document.getElementById('inputMerkBarang').value;
-            const jumlahBarang = document.getElementById('inputJumlahBarang').value; // Penarikan data jumlah
+            const jumlahBarang = document.getElementById('inputJumlahBarang').value; 
             const ruangan = document.getElementById('ruanganSelect').value;
             const kondisi = document.getElementById('inputKondisi').value;
 
@@ -464,11 +502,11 @@
             btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
             btnSubmit.disabled = true;
 
-            // Simpan ke Firestore (beserta Jumlah)
+            // Simpan ke Firestore
             db.collection("bmn_items").add({
                 nama: namaBarang,
                 merk: merkBarang,
-                jumlah: Number(jumlahBarang), // Pastikan formatnya angka (Number)
+                jumlah: Number(jumlahBarang), 
                 ruangan: ruangan,
                 kondisi: kondisi,
                 foto: base64Foto, 
@@ -482,7 +520,7 @@
             })
             .catch((error) => {
                 console.error("Error adding document: ", error);
-                alert("Gagal menyimpan data! Pastikan internet stabil.");
+                alert("Gagal menyimpan data! Pastikan ukuran gambar tidak terlalu besar dan internet stabil.");
             })
             .finally(() => {
                 btnSubmit.innerHTML = '<i class="fas fa-save"></i> Simpan Data Barang';
