@@ -3,530 +3,421 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin BMN - Terintegrasi</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Panel Admin BMN - Lapas Kelas IIB Arga Makmur</title>
+    
+    <!-- FontAwesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
         :root {
-            --primary: #1e40af;
-            --secondary: #3b82f6;
-            --background: #f1f5f9;
-            --surface: #ffffff;
-            --text: #1e293b;
-            --text-light: #64748b;
-            --danger: #ef4444;
-            --success: #10b981;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
             --warning: #f59e0b;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--background); color: var(--text); min-height: 100vh; }
-        
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
 
-        /* Login Layout */
-        .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1.5rem; }
-        .login-card { background: var(--surface); padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 400px; animation: fadeInUp 0.5s ease-out; }
-        .login-card.shake { animation: shake 0.4s ease-in-out; }
-        .login-header { text-align: center; margin-bottom: 2rem; }
-        .login-header i { font-size: 3rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
 
-        /* Admin Dashboard Layout */
-        .admin-dashboard { display: none; animation: fadeInUp 0.5s ease-out; }
-        header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 1.5rem 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); flex-wrap: wrap; gap: 1rem; }
-        .header-actions { display: flex; gap: 1rem; align-items: center; }
-        .btn-logout { background: rgba(239, 68, 68, 0.8); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s; }
-        .btn-logout:hover { background: var(--danger); }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-        /* Admin Navigation Tabs */
-        .admin-nav { display: flex; justify-content: center; gap: 1rem; margin: 2rem 5% 0; }
-        .nav-btn { background: white; color: var(--text-light); border: 1px solid #e2e8f0; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
-        .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(30, 64, 175, 0.2); }
+        .card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
 
-        /* Container & Cards */
-        .container { max-width: 800px; margin: 2rem auto; padding: 0 5%; }
-        .tab-content { display: none; animation: fadeInUp 0.4s ease-out; }
-        .tab-content.active { display: block; }
-        .card { background: var(--surface); border-radius: 16px; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+        .form-group {
+            margin-bottom: 15px;
+        }
 
-        /* Forms */
-        .form-group { margin-bottom: 1.25rem; }
-        .form-row { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .form-row > .form-group { flex: 1; min-width: 200px; }
-        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-light); font-weight: 500; font-size: 0.9rem; }
-        .form-control { width: 100%; padding: 0.75rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; transition: all 0.3s ease; background: #f8fafc; }
-        .form-control:focus { outline: none; border-color: var(--secondary); background: white; }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
 
-        /* Camera / File Split */
-        .upload-options { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .upload-box { flex: 1; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px; padding: 1rem; text-align: center; position: relative; transition: all 0.2s; }
-        .upload-box:hover { border-color: var(--secondary); background: #eff6ff; }
-        .upload-box i { font-size: 1.5rem; color: var(--secondary); margin-bottom: 0.5rem; }
-        .upload-box span { display: block; font-size: 0.85rem; font-weight: 500; }
-        .upload-box input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
 
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.3s ease; }
-        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
 
-        .btn-edit { background: var(--warning); color: white; border: none; padding: 0.5rem; border-radius: 6px; cursor: pointer; margin-right: 5px;}
-        .btn-delete { background: var(--danger); color: white; border: none; padding: 0.5rem; border-radius: 6px; cursor: pointer; }
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
 
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        th { background: #f8fafc; font-size: 0.9rem; color: var(--text-light); }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-edit {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #d97706;
+        }
+
+        /* Styling Tabel */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f9fafb;
+        }
+
+        #file-status {
+            font-size: 0.9em;
+            color: green;
+            margin-top: 5px;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-    <!-- HALAMAN LOGIN -->
-    <div id="loginSection" class="login-wrapper">
-        <div class="login-card" id="loginCard">
-            <div class="login-header">
-                <i class="fas fa-user-shield"></i>
-                <h2>Admin BMN</h2>
-                <p style="font-size: 0.85rem; color: var(--text-light);">Lapas Kelas IIB Arga Makmur</p>
-            </div>
-            <form onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" id="username" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="password" class="form-control" required>
-                </div>
-                <p id="errorMsg" style="color: var(--danger); font-size: 0.85rem; display: none; text-align: center;">Username/Password salah!</p>
-                <button type="submit" class="btn-primary" style="margin-top: 1rem;">Masuk Admin</button>
-                <a href="index.html" style="display: block; text-align: center; margin-top: 1rem; text-decoration: none; font-size: 0.85rem; color: var(--text-light);">Kembali ke Halaman Publik</a>
-            </form>
-        </div>
+<div class="container">
+    <div class="header">
+        <h2><i class="fas fa-boxes"></i> Panel Admin BMN Lapas Arga Makmur</h2>
+        <p>Kelola Data Barang Milik Negara dan Lokasi Ruangan</p>
     </div>
 
-    <!-- DASHBOARD ADMIN -->
-    <div id="adminDashboard" class="admin-dashboard">
-        <header>
-            <div>
-                <h2><i class="fas fa-user-gear"></i> Panel Admin BMN</h2>
-            </div>
-            <div class="header-actions">
-                <a href="index.html" style="color: white; text-decoration: none; font-size: 0.9rem;"><i class="fas fa-eye"></i> View Publik</a>
-                <button class="btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Keluar</button>
-            </div>
-        </header>
-
-        <!-- Menu Navigasi Admin -->
-        <div class="admin-nav">
-            <button class="nav-btn active" onclick="switchAdminTab('input-barang')"><i class="fas fa-box-open"></i> Kelola Barang</button>
-            <button class="nav-btn" onclick="switchAdminTab('kelola-ruangan')"><i class="fas fa-door-open"></i> Kelola Ruangan</button>
-        </div>
-
-        <div class="container">
-            <!-- TAB 1: INPUT BARANG -->
-            <div id="input-barang" class="tab-content active">
-                <div class="card">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--primary);"><i class="fas fa-plus-circle"></i> Input Data Barang BMN</h3>
-                    <form id="bmnForm" onsubmit="handleSaveItem(event)">
-                        <div class="form-group">
-                            <label>Nama Barang</label>
-                            <input type="text" id="inputNamaBarang" class="form-control" placeholder="Contoh: Meja Kerja" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Merk / Tipe</label>
-                            <input type="text" id="inputMerkBarang" class="form-control" placeholder="Contoh: Olympic / Kayu Jati" required>
-                        </div>
-                        
-                        <!-- Penambahan Form Row untuk Jumlah Barang dan Lokasi -->
-                        <div class="form-row">
-                            <div class="form-group" style="flex: 0 0 120px;">
-                                <label>Jumlah</label>
-                                <input type="number" id="inputJumlahBarang" class="form-control" min="1" placeholder="Misal: 5" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Lokasi Ruangan</label>
-                                <select id="ruanganSelect" class="form-control" required>
-                                    <option value="">-- Data Ruangan Kosong --</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Kondisi Barang</label>
-                            <select id="inputKondisi" class="form-control" required>
-                                <option value="Baik">Baik</option>
-                                <option value="Rusak Ringan">Rusak Ringan</option>
-                                <option value="Rusak Berat">Rusak Berat</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Foto Barang (Pilih Sumber)</label>
-                            <div class="upload-options">
-                                <div class="upload-box">
-                                    <i class="fas fa-camera"></i>
-                                    <span>Buka Kamera</span>
-                                    <input type="file" accept="image/*" capture="environment" onchange="previewFile(this)">
-                                </div>
-                                <div class="upload-box">
-                                    <i class="fas fa-folder-open"></i>
-                                    <span>Pilih dari Galeri</span>
-                                    <input type="file" accept="image/*" onchange="previewFile(this)">
-                                </div>
-                            </div>
-                            <p id="file-status" style="font-size: 0.8rem; color: var(--success); margin-top: 0.5rem; display: none;"><i class="fas fa-check-circle"></i> Foto berhasil dipilih</p>
-                        </div>
-
-                        <button type="submit" class="btn-primary" style="margin-top: 1rem;"><i class="fas fa-save"></i> Simpan Data Barang</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- TAB 2: KELOLA RUANGAN -->
-            <div id="kelola-ruangan" class="tab-content">
-                <div class="card" style="margin-bottom: 2rem;">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--primary);" id="roomFormTitle"><i class="fas fa-door-open"></i> Tambah Ruangan Baru</h3>
-                    <form id="roomForm" onsubmit="saveRoom(event)">
-                        <input type="hidden" id="roomId"> 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Nama Ruangan</label>
-                                <input type="text" id="roomName" class="form-control" placeholder="Contoh: Ruang Kalapas" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Luas Ruangan (m²)</label>
-                                <input type="number" id="roomSize" class="form-control" placeholder="Contoh: 24" required>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 1rem;">
-                            <button type="submit" class="btn-primary" id="btnSaveRoom">Simpan Ruangan</button>
-                            <button type="button" class="btn-primary" style="background: var(--text-light); display: none;" id="btnCancelEdit" onclick="resetRoomForm()">Batal Edit</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="card" style="overflow-x: auto;">
-                    <h3 style="margin-bottom: 1rem; color: var(--primary);"><i class="fas fa-list"></i> Daftar Ruangan Terdaftar</h3>
-                    <table id="roomTable">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Ruangan</th>
-                                <th>Luas</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data ruangan dari Firebase akan diisi di sini -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- LIBRARY FIREBASE COMPAT -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-    <script>
-        // --- 1. INISIALISASI FIREBASE ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyB0qOgDA7xq1hP5KkuDyFf8nAJyFAMvkRc",
-            authDomain: "bmn-lapas-arma.firebaseapp.com",
-            projectId: "bmn-lapas-arma",
-            storageBucket: "bmn-lapas-arma.firebasestorage.app",
-            messagingSenderId: "928672297876",
-            appId: "1:928672297876:web:418f0f959d105b1fe5d581"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // --- 2. AUTENTIKASI ---
-        const USER_ADMIN = "bmnlapas";
-        const PASS_ADMIN = "L7pasarma#";
-
-        document.addEventListener('DOMContentLoaded', () => {
-            if (sessionStorage.getItem('bmn_admin_session') === 'active') {
-                showDashboard();
-            }
-        });
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const userIn = document.getElementById('username').value.trim();
-            const passIn = document.getElementById('password').value;
-            if (userIn === USER_ADMIN && passIn === PASS_ADMIN) {
-                sessionStorage.setItem('bmn_admin_session', 'active');
-                showDashboard();
-            } else {
-                document.getElementById('errorMsg').style.display = 'block';
-                document.getElementById('loginCard').classList.add('shake');
-                setTimeout(() => document.getElementById('loginCard').classList.remove('shake'), 400);
-            }
-        }
-
-        function showDashboard() {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'block';
-            loadRoomsDataFromFirebase(); // Muat data ruangan dari Firebase saat login
-        }
-
-        function handleLogout() {
-            sessionStorage.removeItem('bmn_admin_session');
-            location.reload();
-        }
-
-        // --- 3. NAVIGASI TAB ADMIN ---
-        function switchAdminTab(tabId) {
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-        }
-
-        // --- 4. SISTEM KELOLA RUANGAN TERINTEGRASI FIREBASE ---
-        let rooms = []; // Penampung data ruangan sementara di browser
-
-        // Fungsi Menarik Data Ruangan dari Firebase Firestore
-        function loadRoomsDataFromFirebase() {
-            const tbody = document.querySelector('#roomTable tbody');
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Memuat data ruangan dari database... <i class="fas fa-spinner fa-spin"></i></td></tr>';
-
-            db.collection("bmn_rooms").orderBy("waktu_input", "asc").get().then((querySnapshot) => {
-                rooms = []; // Kosongkan array sementara
-                tbody.innerHTML = '';
-                const select = document.getElementById('ruanganSelect');
-                select.innerHTML = '<option value="">-- Pilih Ruangan --</option>';
-
-                if (querySnapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b;">Belum ada ruangan yang ditambahkan</td></tr>';
-                    return;
-                }
-
-                let index = 1;
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const docId = doc.id; // Ambil ID Dokumen Firebase
-
-                    // Masukkan ke array sementara
-                    rooms.push({ id: docId, name: data.nama, size: data.luas });
-
-                    // Render ke Tabel
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${index}</td>
-                            <td style="font-weight: 500;">${data.nama}</td>
-                            <td>${data.luas} m²</td>
-                            <td>
-                                <button class="btn-edit" onclick="editRoom('${docId}')" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="btn-delete" onclick="deleteRoom('${docId}', '${data.nama}')" title="Hapus"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-
-                    // Render ke Dropdown di Form Input Barang
-                    select.innerHTML += `<option value="${data.nama}">${data.nama}</option>`;
-                    
-                    index++;
-                });
-            }).catch((error) => {
-                console.error("Error mengambil data ruangan: ", error);
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Gagal memuat data ruangan dari database.</td></tr>';
-            });
-        }
-
-        // Fungsi Tambah / Update Ruangan ke Firebase
-        function saveRoom(e) {
-            e.preventDefault();
-            const docId = document.getElementById('roomId').value;
-            const nameInput = document.getElementById('roomName').value;
-            const sizeInput = document.getElementById('roomSize').value;
-
-            const btnSave = document.getElementById('btnSaveRoom');
-            btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
-            btnSave.disabled = true;
-
-            if (docId) {
-                // Proses Edit/Update
-                db.collection("bmn_rooms").doc(docId).update({
-                    nama: nameInput,
-                    luas: sizeInput
-                })
-                .then(() => {
-                    alert("Data Ruangan berhasil diupdate!");
-                    resetRoomForm();
-                    loadRoomsDataFromFirebase();
-                })
-                .catch((error) => {
-                    console.error("Error updating document: ", error);
-                    alert("Gagal update data!");
-                })
-                .finally(() => { resetBtnSave(); });
-            } else {
-                // Proses Tambah Baru
-                db.collection("bmn_rooms").add({
-                    nama: nameInput,
-                    luas: sizeInput,
-                    waktu_input: firebase.firestore.FieldValue.serverTimestamp()
-                })
-                .then((docRef) => {
-                    alert("Ruangan Baru berhasil ditambahkan ke Database!");
-                    resetRoomForm();
-                    loadRoomsDataFromFirebase();
-                })
-                .catch((error) => {
-                    console.error("Error adding document: ", error);
-                    alert("Gagal menambah ruangan!");
-                })
-                .finally(() => { resetBtnSave(); });
-            }
-        }
-
-        // Siapkan form untuk Edit
-        function editRoom(docId) {
-            const room = rooms.find(r => r.id === docId);
-            if (room) {
-                document.getElementById('roomId').value = room.id;
-                document.getElementById('roomName').value = room.name;
-                document.getElementById('roomSize').value = room.size;
-                
-                document.getElementById('roomFormTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Data Ruangan';
-                document.getElementById('btnSaveRoom').innerHTML = '<i class="fas fa-save"></i> Update Ruangan';
-                document.getElementById('btnCancelEdit').style.display = 'block';
-                
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        // Hapus Ruangan dari Firebase
-        function deleteRoom(docId, roomName) {
-            if (confirm(`Yakin ingin menghapus ruangan "${roomName}"? Data ini akan terhapus dari Database secara permanen.`)) {
-                db.collection("bmn_rooms").doc(docId).delete().then(() => {
-                    alert("Ruangan berhasil dihapus.");
-                    loadRoomsDataFromFirebase();
-                }).catch((error) => {
-                    console.error("Error removing document: ", error);
-                    alert("Gagal menghapus ruangan!");
-                });
-            }
-        }
-
-        function resetRoomForm() {
-            document.getElementById('roomForm').reset();
-            document.getElementById('roomId').value = '';
-            document.getElementById('roomFormTitle').innerHTML = '<i class="fas fa-door-open"></i> Tambah Ruangan Baru';
-            resetBtnSave();
-            document.getElementById('btnCancelEdit').style.display = 'none';
-        }
+    <!-- AREA FORM INPUT & EDIT BARANG -->
+    <div class="card">
+        <h3 style="margin-top:0; color: var(--primary);"><i class="fas fa-plus-circle"></i> Form Input / Edit Barang</h3>
         
-        function resetBtnSave() {
-            const btnSave = document.getElementById('btnSaveRoom');
-            btnSave.innerHTML = 'Simpan Ruangan';
-            btnSave.disabled = false;
-        }
+        <form id="bmnForm" onsubmit="handleSaveItem(event)">
+            <!-- Input Hidden untuk menyimpan ID saat Edit -->
+            <input type="hidden" id="itemId">
 
+            <div class="form-group">
+                <label>Nama Barang</label>
+                <input type="text" id="inputNamaBarang" class="form-control" required placeholder="Contoh: Printer EPSON">
+            </div>
 
-        // --- 5. SISTEM SIMPAN BARANG KE FIREBASE (Dengan Kompresi Foto) ---
-        let base64Foto = "";
+            <div class="form-group">
+                <label>Merk/Tipe</label>
+                <input type="text" id="inputMerkBarang" class="form-control" required placeholder="Contoh: L3110">
+            </div>
 
-        // Fungsi Kompresi Foto Otomatis
-        function previewFile(input) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                const reader = new FileReader();
-                
-                // Tampilkan status loading kompresi
+            <div class="form-group">
+                <label>Jumlah</label>
+                <input type="number" id="inputJumlahBarang" class="form-control" required min="1" value="1">
+            </div>
+
+            <div class="form-group">
+                <label>Lokasi Ruangan</label>
+                <select id="ruanganSelect" class="form-control" required>
+                    <option value="">-- Pilih Ruangan --</option>
+                    <!-- Opsi ruangan akan dimuat dari Firebase -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Kondisi Barang</label>
+                <select id="inputKondisi" class="form-control" required>
+                    <option value="Baik">Baik</option>
+                    <option value="Rusak Ringan">Rusak Ringan</option>
+                    <option value="Rusak Berat">Rusak Berat</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Foto Barang (Opsional)</label>
+                <input type="file" id="inputFoto" class="form-control" accept="image/*">
+                <div id="file-status"><i class="fas fa-check-circle"></i> Foto berhasil dimuat siap disimpan</div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="btnSubmit">
+                <i class="fas fa-save"></i> Simpan Data Barang
+            </button>
+            <button type="button" onclick="resetFormBarang()" class="btn-edit" style="background-color: #6b7280; margin-left: 10px;">
+                <i class="fas fa-undo"></i> Batal / Reset
+            </button>
+        </form>
+    </div>
+
+    <!-- AREA TABEL DAFTAR BARANG (Untuk melihat dan mengedit) -->
+    <div class="card" style="overflow-x: auto;">
+        <h3 style="margin-top:0; color: var(--primary);"><i class="fas fa-list"></i> Daftar Barang BMN</h3>
+        <table id="itemTable">
+            <thead>
+                <tr>
+                    <th>Nama & Merk Barang</th>
+                    <th>Jumlah</th>
+                    <th>Kondisi</th>
+                    <th>Lokasi Ruangan</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data barang dari firebase masuk kesini -->
+                <tr><td colspan="5" style="text-align:center;">Memuat data... <i class="fas fa-spinner fa-spin"></i></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Firebase App (the core Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+    // ==========================================
+    // 1. MASUKKAN KONFIGURASI FIREBASE ANDA DI SINI
+    // ==========================================
+    const firebaseConfig = {
+        apiKey: "API_KEY_ANDA",
+        authDomain: "PROJECT_ID_ANDA.firebaseapp.com",
+        projectId: "PROJECT_ID_ANDA",
+        storageBucket: "PROJECT_ID_ANDA.appspot.com",
+        messagingSenderId: "SENDER_ID_ANDA",
+        appId: "APP_ID_ANDA"
+    };
+
+    // Inisialisasi Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    // ==========================================
+    // 2. VARIABEL GLOBAL & EVENT LISTENER
+    // ==========================================
+    let base64Foto = "";
+    let items = []; // Menyimpan data sementara untuk fungsi edit
+
+    // Ubah gambar jadi base64 saat file dipilih
+    document.getElementById('inputFoto').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                base64Foto = event.target.result;
                 document.getElementById('file-status').style.display = 'block';
-                document.getElementById('file-status').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses & mengompres foto...';
-
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    
-                    img.onload = function() {
-                        const canvas = document.createElement("canvas");
-                        
-                        // Maksimal lebar/tinggi 800px agar tidak memberatkan database
-                        const MAX_WIDTH = 800; 
-                        const MAX_HEIGHT = 800;
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > height) {
-                            if (width > MAX_WIDTH) {
-                                height *= MAX_WIDTH / width;
-                                width = MAX_WIDTH;
-                            }
-                        } else {
-                            if (height > MAX_HEIGHT) {
-                                width *= MAX_HEIGHT / height;
-                                height = MAX_HEIGHT;
-                            }
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        // Konversi ke format JPEG kualitas 70%
-                        base64Foto = canvas.toDataURL("image/jpeg", 0.7);
-                        
-                        document.getElementById('file-status').innerHTML = '<i class="fas fa-check-circle"></i> Foto berhasil dikompres & siap diupload';
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
+            };
+            reader.readAsDataURL(file);
         }
+    });
 
-        function handleSaveItem(e) {
-            e.preventDefault();
+    // ==========================================
+    // 3. FUNGSI MEMUAT DATA RUANGAN (DROPDOWN)
+    // ==========================================
+    function loadRuanganFromFirebase() {
+        db.collection("ruangan").orderBy("nama").onSnapshot((querySnapshot) => {
+            const select = document.getElementById('ruanganSelect');
+            select.innerHTML = '<option value="">-- Pilih Ruangan --</option>'; // Reset
             
-            const namaBarang = document.getElementById('inputNamaBarang').value;
-            const merkBarang = document.getElementById('inputMerkBarang').value;
-            const jumlahBarang = document.getElementById('inputJumlahBarang').value; 
-            const ruangan = document.getElementById('ruanganSelect').value;
-            const kondisi = document.getElementById('inputKondisi').value;
+            querySnapshot.forEach((doc) => {
+                select.innerHTML += `<option value="${doc.data().nama}">${doc.data().nama}</option>`;
+            });
+        });
+    }
 
-            if(!ruangan) {
-                alert("Pilih ruangan terlebih dahulu!");
+    // ==========================================
+    // 4. FUNGSI MEMUAT DATA BARANG (TABEL)
+    // ==========================================
+    function loadItemsDataFromFirebase() {
+        const tbody = document.querySelector('#itemTable tbody');
+        
+        db.collection("bmn_items").orderBy("waktu_input", "desc").onSnapshot((querySnapshot) => {
+            items = [];
+            tbody.innerHTML = '';
+            
+            if (querySnapshot.empty) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada data barang</td></tr>';
                 return;
             }
 
-            const btnSubmit = document.querySelector('#bmnForm button[type="submit"]');
-            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
-            btnSubmit.disabled = true;
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                items.push({ id: doc.id, ...data }); // Simpan ke array global untuk edit
 
-            // Simpan ke Firestore
-            db.collection("bmn_items").add({
-                nama: namaBarang,
-                merk: merkBarang,
-                jumlah: Number(jumlahBarang), 
-                ruangan: ruangan,
-                kondisi: kondisi,
-                foto: base64Foto, 
-                waktu_input: firebase.firestore.FieldValue.serverTimestamp()
-            })
-            .then((docRef) => {
-                alert("Data berhasil disimpan ke Database!");
-                document.getElementById('bmnForm').reset();
-                document.getElementById('file-status').style.display = 'none';
-                base64Foto = ""; 
-            })
-            .catch((error) => {
-                console.error("Error adding document: ", error);
-                alert("Gagal menyimpan data! Pastikan ukuran gambar tidak terlalu besar dan internet stabil.");
-            })
-            .finally(() => {
-                btnSubmit.innerHTML = '<i class="fas fa-save"></i> Simpan Data Barang';
-                btnSubmit.disabled = false;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>
+                            <strong>${data.nama}</strong><br>
+                            <small style="color:var(--text-light)">${data.merk}</small>
+                        </td>
+                        <td>${data.jumlah}</td>
+                        <td>
+                            <span style="padding:3px 8px; border-radius:12px; font-size:12px; 
+                                ${data.kondisi === 'Baik' ? 'background:#d1fae5; color:#065f46;' : 
+                                  data.kondisi === 'Rusak Ringan' ? 'background:#fef3c7; color:#92400e;' : 
+                                  'background:#fee2e2; color:#b91c1c;'}">
+                                ${data.kondisi}
+                            </span>
+                        </td>
+                        <td><strong>${data.ruangan}</strong></td>
+                        <td>
+                            <button type="button" class="btn-edit" onclick="editItem('${doc.id}')" title="Edit Data">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+    }
+
+    // ==========================================
+    // 5. FUNGSI MENYIAPKAN FORM EDIT
+    // ==========================================
+    function editItem(docId) {
+        const item = items.find(i => i.id === docId);
+        if (item) {
+            // Isi form dengan data yang ada di database
+            document.getElementById('itemId').value = item.id;
+            document.getElementById('inputNamaBarang').value = item.nama;
+            document.getElementById('inputMerkBarang').value = item.merk;
+            document.getElementById('inputJumlahBarang').value = item.jumlah;
+            document.getElementById('ruanganSelect').value = item.ruangan;
+            document.getElementById('inputKondisi').value = item.kondisi;
+            
+            // Ubah tombol submit menjadi mode update
+            const btnSubmit = document.getElementById('btnSubmit');
+            btnSubmit.innerHTML = '<i class="fas fa-save"></i> Update Data Barang';
+            btnSubmit.classList.replace('btn-primary', 'btn-edit');
+            
+            // Scroll layar otomatis ke atas (ke arah form)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    // ==========================================
+    // 6. FUNGSI MENYIMPAN / MENGUPDATE BARANG
+    // ==========================================
+    function handleSaveItem(e) {
+        e.preventDefault(); // Mencegah reload halaman
+
+        const btnSubmit = document.getElementById('btnSubmit');
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+        const itemId = document.getElementById('itemId').value;
+        const namaBarang = document.getElementById('inputNamaBarang').value;
+        const merkBarang = document.getElementById('inputMerkBarang').value;
+        const jumlahBarang = document.getElementById('inputJumlahBarang').value;
+        const ruangan = document.getElementById('ruanganSelect').value;
+        const kondisi = document.getElementById('inputKondisi').value;
+
+        // Susun data
+        let dataToSave = {
+            nama: namaBarang,
+            merk: merkBarang,
+            jumlah: Number(jumlahBarang), 
+            ruangan: ruangan,
+            kondisi: kondisi
+        };
+
+        if (base64Foto !== "") {
+            dataToSave.foto = base64Foto;
+        }
+
+        // CEK APAKAH INI EDIT ATAU BARU
+        if (itemId) {
+            // PROSES UPDATE DATA (EDIT)
+            db.collection("bmn_items").doc(itemId).update(dataToSave)
+            .then(() => {
+                alert("Perubahan data berhasil disimpan!");
+                resetFormBarang();
+            }).catch(error => { 
+                alert("Gagal update data!"); 
+                console.error(error); 
+                resetFormBarang(); // Kembalikan state tombol
+            });
+        } else {
+            // PROSES TAMBAH DATA BARU
+            dataToSave.waktu_input = firebase.firestore.FieldValue.serverTimestamp();
+            db.collection("bmn_items").add(dataToSave)
+            .then(() => {
+                alert("Barang baru berhasil ditambahkan!");
+                resetFormBarang();
+            }).catch(error => { 
+                alert("Gagal menyimpan data!"); 
+                console.error(error);
+                resetFormBarang(); // Kembalikan state tombol
             });
         }
-    </script>
+    }
+
+    // ==========================================
+    // 7. FUNGSI RESET FORM KEMBALI KE AWAL
+    // ==========================================
+    function resetFormBarang() {
+        document.getElementById('bmnForm').reset();
+        document.getElementById('itemId').value = '';
+        document.getElementById('file-status').style.display = 'none';
+        base64Foto = "";
+        
+        const btnSubmit = document.getElementById('btnSubmit');
+        btnSubmit.innerHTML = '<i class="fas fa-save"></i> Simpan Data Barang';
+        btnSubmit.classList.remove('btn-edit');
+        btnSubmit.classList.add('btn-primary');
+        btnSubmit.disabled = false;
+    }
+
+    // ==========================================
+    // 8. JALANKAN FUNGSI SAAT HALAMAN DIBUKA
+    // ==========================================
+    window.onload = function() {
+        loadRuanganFromFirebase();
+        loadItemsDataFromFirebase();
+    };
+
+</script>
 </body>
 </html>
