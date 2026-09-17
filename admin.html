@@ -202,7 +202,7 @@
                 <label for="ruanganSelect">Lokasi Ruangan</label>
                 <select id="ruanganSelect" class="form-control" required>
                     <option value="">-- Pilih Ruangan --</option>
-                    <!-- Opsi ruangan akan dimuat dari Firebase -->
+                    <!-- Opsi ruangan dimuat dinamis dari bmn_rooms -->
                 </select>
             </div>
 
@@ -236,7 +236,19 @@
 
     <!-- AREA TABEL DAFTAR BARANG -->
     <div class="card" style="overflow-x: auto;">
-        <h3 style="margin-top:0; color: var(--primary);"><i class="fas fa-list"></i> Daftar Barang BMN</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+            <h3 style="margin: 0; color: var(--primary);"><i class="fas fa-list"></i> Daftar Barang BMN</h3>
+            
+            <!-- Dropdown Filter Ruangan -->
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label for="filterRuangan" style="font-weight: 600; font-size: 14px; color: var(--text-light);">Filter Ruangan:</label>
+                <select id="filterRuangan" class="form-control" style="width: auto; min-width: 200px; padding: 6px 10px;" onchange="renderTable()">
+                    <option value="Semua">-- Semua Ruangan --</option>
+                    <!-- Opsi filter dimuat otomatis dari bmn_rooms -->
+                </select>
+            </div>
+        </div>
+
         <table id="itemTable">
             <thead>
                 <tr>
@@ -264,10 +276,10 @@
 
 <script>
     // ==========================================
-    // 1. MASUKKAN KONFIGURASI FIREBASE ANDA DI SINI
+    // 1. KONFIGURASI FIREBASE
     // ==========================================
     const firebaseConfig = {
-        apiKey: "AIzaSyB0qOgDA7xq1hP5KkuDyFf8nAJyFAMvkRc",
+        apiKey: "AIzaSyB0qOgDA7xq1hP5KkuDyFf8nAJyFAMvkRc", // Ganti dengan Web API Key dari Firebase Console
         authDomain: "bmn-lapas-arma.firebaseapp.com",
         projectId: "bmn-lapas-arma",
         storageBucket: "bmn-lapas-arma.firebasestorage.app",
@@ -285,9 +297,9 @@
     // 2. VARIABEL GLOBAL & EVENT LISTENER
     // ==========================================
     let base64Foto = "";
-    let items = []; // Menyimpan data sementara untuk fungsi edit
+    let items = []; // Menyimpan data sementara untuk fungsi edit dan filter
 
-    // Ubah gambar jadi base64 saat file dipilih
+    // Konversi gambar ke base64 saat file dipilih
     document.getElementById('inputFoto').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -303,107 +315,133 @@
     });
 
     // ==========================================
-    // 3. FUNGSI MEMUAT DATA RUANGAN (DROPDOWN)
+    // 3. MEMUAT DATA RUANGAN (FORM & FILTER)
     // ==========================================
     function loadRuanganFromFirebase() {
-    // Menggunakan nama koleksi 'bmn_rooms'
-    db.collection("bmn_rooms").onSnapshot((querySnapshot) => {
-        const select = document.getElementById('ruanganSelect');
-        
-        if (querySnapshot.empty) {
-            console.warn("Koleksi 'bmn_rooms' di Firestore masih kosong!");
-            select.innerHTML = '<option value="">-- Data Ruangan Kosong di bmn_rooms --</option>';
-            return;
-        }
-
-        let options = '<option value="">-- Pilih Ruangan --</option>';
-        let listRuangan = [];
-
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            // Mengecek field 'nama', 'nama_ruangan', 'ruangan', atau 'room_name'
-            const namaRuangan = data.nama || data.nama_ruangan || data.ruangan || data.room_name || doc.id;
-            if (namaRuangan) {
-                listRuangan.push(namaRuangan);
-            }
-        });
-
-        // Urutkan nama ruangan A-Z
-        listRuangan.sort((a, b) => a.localeCompare(b));
-
-        listRuangan.forEach((nama) => {
-            options += `<option value="${nama}">${nama}</option>`;
-        });
-
-        select.innerHTML = options;
-    }, (error) => {
-        console.error("Gagal memuat data dari bmn_rooms:", error);
-        select.innerHTML = '<option value="">-- Gagal Memuat Data Ruangan --</option>';
-    });
-}
-
-    // ==========================================
-    // 4. FUNGSI MEMUAT DATA BARANG (TABEL)
-    // ==========================================
-    function loadItemsDataFromFirebase() {
-        const tbody = document.querySelector('#itemTable tbody');
-        
-        db.collection("bmn_items").orderBy("waktu_input", "desc").onSnapshot((querySnapshot) => {
-            items = [];
+        db.collection("bmn_rooms").onSnapshot((querySnapshot) => {
+            const selectForm = document.getElementById('ruanganSelect');
+            const selectFilter = document.getElementById('filterRuangan');
             
             if (querySnapshot.empty) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Belum ada data barang</td></tr>';
+                selectForm.innerHTML = '<option value="">-- Data Ruangan Kosong --</option>';
+                selectFilter.innerHTML = '<option value="Semua">-- Semua Ruangan --</option>';
                 return;
             }
 
-            let rowsHtml = '';
+            let optionsForm = '<option value="">-- Pilih Ruangan --</option>';
+            let optionsFilter = '<option value="Semua">-- Semua Ruangan --</option>';
+            let listRuangan = [];
+
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                items.push({ id: doc.id, ...data });
-
-                const fotoHtml = data.foto 
-                    ? `<img src="${data.foto}" class="img-thumb" alt="Foto ${data.nama}">` 
-                    : `<span style="color:var(--text-light); font-size:12px;">Tanpa Foto</span>`;
-
-                rowsHtml += `
-                    <tr>
-                        <td>${fotoHtml}</td>
-                        <td>
-                            <strong>${data.nama || '-'}</strong><br>
-                            <small style="color:var(--text-light)">${data.merk || '-'}</small>
-                        </td>
-                        <td>${data.jumlah || 0}</td>
-                        <td>
-                            <span style="padding:3px 8px; border-radius:12px; font-size:12px; 
-                                ${data.kondisi === 'Baik' ? 'background:#d1fae5; color:#065f46;' : 
-                                  data.kondisi === 'Rusak Ringan' ? 'background:#fef3c7; color:#92400e;' : 
-                                  'background:#fee2e2; color:#b91c1c;'}">
-                                ${data.kondisi || '-'}
-                            </span>
-                        </td>
-                        <td><strong>${data.ruangan || '-'}</strong></td>
-                        <td>
-                            <div class="action-btns">
-                                <button type="button" class="btn-edit" onclick="editItem('${doc.id}')" title="Edit Data">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <button type="button" class="btn-danger" onclick="deleteItem('${doc.id}')" title="Hapus Data">
-                                    <i class="fas fa-trash"></i> Hapus
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+                const namaRuangan = data.nama || data.nama_ruangan || data.ruangan || data.room_name || doc.id;
+                if (namaRuangan) {
+                    listRuangan.push(namaRuangan);
+                }
             });
-            tbody.innerHTML = rowsHtml;
+
+            // Urutkan nama ruangan A-Z
+            listRuangan.sort((a, b) => a.localeCompare(b));
+
+            listRuangan.forEach((nama) => {
+                optionsForm += `<option value="${nama}">${nama}</option>`;
+                optionsFilter += `<option value="${nama}">${nama}</option>`;
+            });
+
+            selectForm.innerHTML = optionsForm;
+            
+            // Pertahankan nilai filter yang sedang aktif jika ada
+            const currentFilterValue = selectFilter.value;
+            selectFilter.innerHTML = optionsFilter;
+            if (listRuangan.includes(currentFilterValue)) {
+                selectFilter.value = currentFilterValue;
+            }
         }, (error) => {
-            console.error("Gagal memuat data barang:", error);
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Gagal memuat data dari database.</td></tr>';
+            console.error("Gagal memuat data dari bmn_rooms:", error);
+            alert("Gagal memuat data ruangan: " + error.message);
         });
     }
 
     // ==========================================
-    // 5. FUNGSI MENYIAPKAN FORM EDIT
+    // 4. MEMUAT DATA BARANG DARI FIREBASE
+    // ==========================================
+    function loadItemsDataFromFirebase() {
+        db.collection("bmn_items").orderBy("waktu_input", "desc").onSnapshot((querySnapshot) => {
+            items = []; // Reset array global
+            
+            querySnapshot.forEach((doc) => {
+                items.push({ id: doc.id, ...doc.data() });
+            });
+            
+            // Render ulang tabel
+            renderTable();
+            
+        }, (error) => {
+            console.error("Gagal memuat data barang:", error);
+            document.querySelector('#itemTable tbody').innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Gagal memuat data dari database.</td></tr>';
+        });
+    }
+
+    // ==========================================
+    // 5. RENDER TABEL & FILTER LOKASI
+    // ==========================================
+    function renderTable() {
+        const tbody = document.querySelector('#itemTable tbody');
+        const filterValue = document.getElementById('filterRuangan').value;
+        
+        // Logika Filter
+        let filteredItems = items;
+        if (filterValue !== "Semua") {
+            filteredItems = items.filter(item => item.ruangan === filterValue);
+        }
+
+        // Tampilan jika data kosong
+        if (filteredItems.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada data barang ${filterValue !== 'Semua' ? 'di ruangan <b>' + filterValue + '</b>' : ''}</td></tr>`;
+            return;
+        }
+
+        let rowsHtml = '';
+        filteredItems.forEach((data) => {
+            const fotoHtml = data.foto 
+                ? `<img src="${data.foto}" class="img-thumb" alt="Foto">` 
+                : `<span style="color:var(--text-light); font-size:12px;">Tanpa Foto</span>`;
+
+            rowsHtml += `
+                <tr>
+                    <td>${fotoHtml}</td>
+                    <td>
+                        <strong>${data.nama || '-'}</strong><br>
+                        <small style="color:var(--text-light)">${data.merk || '-'}</small>
+                    </td>
+                    <td>${data.jumlah || 0}</td>
+                    <td>
+                        <span style="padding:3px 8px; border-radius:12px; font-size:12px; 
+                            ${data.kondisi === 'Baik' ? 'background:#d1fae5; color:#065f46;' : 
+                              data.kondisi === 'Rusak Ringan' ? 'background:#fef3c7; color:#92400e;' : 
+                              'background:#fee2e2; color:#b91c1c;'}">
+                            ${data.kondisi || '-'}
+                        </span>
+                    </td>
+                    <td><strong>${data.ruangan || '-'}</strong></td>
+                    <td>
+                        <div class="action-btns">
+                            <button type="button" class="btn-edit" onclick="editItem('${data.id}')" title="Edit Data">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button type="button" class="btn-danger" onclick="deleteItem('${data.id}')" title="Hapus Data">
+                                <i class="fas fa-trash"></i> Hapus
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = rowsHtml;
+    }
+
+    // ==========================================
+    // 6. MENYIAPKAN FORM EDIT
     // ==========================================
     function editItem(docId) {
         const item = items.find(i => i.id === docId);
@@ -415,7 +453,6 @@
             document.getElementById('ruanganSelect').value = item.ruangan || '';
             document.getElementById('inputKondisi').value = item.kondisi || 'Baik';
             
-            // Tampilkan preview foto jika ada
             if (item.foto) {
                 document.getElementById('imgPreview').src = item.foto;
                 document.getElementById('previewBox').style.display = 'flex';
@@ -432,7 +469,7 @@
     }
 
     // ==========================================
-    // 6. FUNGSI HAPUS BARANG
+    // 7. MENGAHUS BARANG
     // ==========================================
     function deleteItem(docId) {
         if (confirm("Apakah Anda yakin ingin menghapus barang ini dari sistem?")) {
@@ -451,7 +488,7 @@
     }
 
     // ==========================================
-    // 7. FUNGSI MENYIMPAN / MENGUPDATE BARANG
+    // 8. MENYIMPAN / MENGUPDATE BARANG
     // ==========================================
     function handleSaveItem(e) {
         e.preventDefault();
@@ -480,7 +517,7 @@
         }
 
         if (itemId) {
-            // PROSES UPDATE DATA (EDIT)
+            // EDIT / UPDATE DATA
             db.collection("bmn_items").doc(itemId).update(dataToSave)
             .then(() => {
                 alert("Perubahan data berhasil disimpan!");
@@ -492,7 +529,7 @@
                 btnSubmit.innerHTML = '<i class="fas fa-save"></i> Update Data Barang';
             });
         } else {
-            // PROSES TAMBAH DATA BARU
+            // TAMBAH DATA BARU
             dataToSave.waktu_input = firebase.firestore.FieldValue.serverTimestamp();
             db.collection("bmn_items").add(dataToSave)
             .then(() => {
@@ -508,7 +545,7 @@
     }
 
     // ==========================================
-    // 8. FUNGSI RESET FORM KEMBALI KE AWAL
+    // 9. RESET FORM
     // ==========================================
     function resetFormBarang() {
         document.getElementById('bmnForm').reset();
@@ -526,7 +563,7 @@
     }
 
     // ==========================================
-    // 9. JALANKAN FUNGSI SAAT HALAMAN DIBUKA
+    // 10. JALANKAN SAAT HALAMAN DIBUKA
     // ==========================================
     window.onload = function() {
         loadRuanganFromFirebase();
