@@ -306,21 +306,41 @@
     // 3. FUNGSI MEMUAT DATA RUANGAN (DROPDOWN)
     // ==========================================
     function loadRuanganFromFirebase() {
-        db.collection("ruangan").orderBy("nama").onSnapshot((querySnapshot) => {
-            const select = document.getElementById('ruanganSelect');
-            let options = '<option value="">-- Pilih Ruangan --</option>';
-            
-            querySnapshot.forEach((doc) => {
-                const nama = doc.data().nama;
-                if (nama) {
-                    options += `<option value="${nama}">${nama}</option>`;
-                }
-            });
-            select.innerHTML = options;
-        }, (error) => {
-            console.error("Gagal memuat data ruangan:", error);
+    // Menggunakan nama koleksi 'bmn_rooms'
+    db.collection("bmn_rooms").onSnapshot((querySnapshot) => {
+        const select = document.getElementById('ruanganSelect');
+        
+        if (querySnapshot.empty) {
+            console.warn("Koleksi 'bmn_rooms' di Firestore masih kosong!");
+            select.innerHTML = '<option value="">-- Data Ruangan Kosong di bmn_rooms --</option>';
+            return;
+        }
+
+        let options = '<option value="">-- Pilih Ruangan --</option>';
+        let listRuangan = [];
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            // Mengecek field 'nama', 'nama_ruangan', 'ruangan', atau 'room_name'
+            const namaRuangan = data.nama || data.nama_ruangan || data.ruangan || data.room_name || doc.id;
+            if (namaRuangan) {
+                listRuangan.push(namaRuangan);
+            }
         });
-    }
+
+        // Urutkan nama ruangan A-Z
+        listRuangan.sort((a, b) => a.localeCompare(b));
+
+        listRuangan.forEach((nama) => {
+            options += `<option value="${nama}">${nama}</option>`;
+        });
+
+        select.innerHTML = options;
+    }, (error) => {
+        console.error("Gagal memuat data dari bmn_rooms:", error);
+        select.innerHTML = '<option value="">-- Gagal Memuat Data Ruangan --</option>';
+    });
+}
 
     // ==========================================
     // 4. FUNGSI MEMUAT DATA BARANG (TABEL)
