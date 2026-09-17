@@ -18,6 +18,8 @@
             --text-light: #6b7280;
             --border: #e5e7eb;
             --warning: #f59e0b;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
         }
 
         body {
@@ -66,7 +68,7 @@
         }
 
         button {
-            padding: 10px 20px;
+            padding: 10px 16px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -75,6 +77,7 @@
             align-items: center;
             gap: 8px;
             transition: 0.3s;
+            font-size: 14px;
         }
 
         .btn-primary {
@@ -95,6 +98,29 @@
             background-color: #d97706;
         }
 
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 6px;
+        }
+
         /* Styling Tabel */
         table {
             width: 100%;
@@ -106,6 +132,7 @@
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid var(--border);
+            vertical-align: middle;
         }
 
         th {
@@ -119,9 +146,24 @@
 
         #file-status {
             font-size: 0.9em;
-            color: green;
+            color: #059669;
             margin-top: 5px;
             display: none;
+        }
+
+        .img-thumb {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .preview-container {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
     </style>
 </head>
@@ -142,22 +184,22 @@
             <input type="hidden" id="itemId">
 
             <div class="form-group">
-                <label>Nama Barang</label>
+                <label for="inputNamaBarang">Nama Barang</label>
                 <input type="text" id="inputNamaBarang" class="form-control" required placeholder="Contoh: Printer EPSON">
             </div>
 
             <div class="form-group">
-                <label>Merk/Tipe</label>
+                <label for="inputMerkBarang">Merk/Tipe</label>
                 <input type="text" id="inputMerkBarang" class="form-control" required placeholder="Contoh: L3110">
             </div>
 
             <div class="form-group">
-                <label>Jumlah</label>
+                <label for="inputJumlahBarang">Jumlah</label>
                 <input type="number" id="inputJumlahBarang" class="form-control" required min="1" value="1">
             </div>
 
             <div class="form-group">
-                <label>Lokasi Ruangan</label>
+                <label for="ruanganSelect">Lokasi Ruangan</label>
                 <select id="ruanganSelect" class="form-control" required>
                     <option value="">-- Pilih Ruangan --</option>
                     <!-- Opsi ruangan akan dimuat dari Firebase -->
@@ -165,7 +207,7 @@
             </div>
 
             <div class="form-group">
-                <label>Kondisi Barang</label>
+                <label for="inputKondisi">Kondisi Barang</label>
                 <select id="inputKondisi" class="form-control" required>
                     <option value="Baik">Baik</option>
                     <option value="Rusak Ringan">Rusak Ringan</option>
@@ -174,26 +216,31 @@
             </div>
 
             <div class="form-group">
-                <label>Foto Barang (Opsional)</label>
+                <label for="inputFoto">Foto Barang (Opsional)</label>
                 <input type="file" id="inputFoto" class="form-control" accept="image/*">
-                <div id="file-status"><i class="fas fa-check-circle"></i> Foto berhasil dimuat siap disimpan</div>
+                <div id="file-status"><i class="fas fa-check-circle"></i> Foto berhasil dimuat dan siap disimpan</div>
+                <div id="previewBox" class="preview-container" style="display: none;">
+                    <img id="imgPreview" class="img-thumb" src="" alt="Preview Foto">
+                    <small style="color: var(--text-light)">Preview foto barang</small>
+                </div>
             </div>
 
             <button type="submit" class="btn-primary" id="btnSubmit">
                 <i class="fas fa-save"></i> Simpan Data Barang
             </button>
-            <button type="button" onclick="resetFormBarang()" class="btn-edit" style="background-color: #6b7280; margin-left: 10px;">
+            <button type="button" onclick="resetFormBarang()" class="btn-secondary" style="margin-left: 10px;">
                 <i class="fas fa-undo"></i> Batal / Reset
             </button>
         </form>
     </div>
 
-    <!-- AREA TABEL DAFTAR BARANG (Untuk melihat dan mengedit) -->
+    <!-- AREA TABEL DAFTAR BARANG -->
     <div class="card" style="overflow-x: auto;">
         <h3 style="margin-top:0; color: var(--primary);"><i class="fas fa-list"></i> Daftar Barang BMN</h3>
         <table id="itemTable">
             <thead>
                 <tr>
+                    <th>Foto</th>
                     <th>Nama & Merk Barang</th>
                     <th>Jumlah</th>
                     <th>Kondisi</th>
@@ -203,7 +250,7 @@
             </thead>
             <tbody>
                 <!-- Data barang dari firebase masuk kesini -->
-                <tr><td colspan="5" style="text-align:center;">Memuat data... <i class="fas fa-spinner fa-spin"></i></td></tr>
+                <tr><td colspan="6" style="text-align:center;">Memuat data... <i class="fas fa-spinner fa-spin"></i></td></tr>
             </tbody>
         </table>
     </div>
@@ -248,6 +295,8 @@
             reader.onload = function(event) {
                 base64Foto = event.target.result;
                 document.getElementById('file-status').style.display = 'block';
+                document.getElementById('imgPreview').src = base64Foto;
+                document.getElementById('previewBox').style.display = 'flex';
             };
             reader.readAsDataURL(file);
         }
@@ -259,11 +308,17 @@
     function loadRuanganFromFirebase() {
         db.collection("ruangan").orderBy("nama").onSnapshot((querySnapshot) => {
             const select = document.getElementById('ruanganSelect');
-            select.innerHTML = '<option value="">-- Pilih Ruangan --</option>'; // Reset
+            let options = '<option value="">-- Pilih Ruangan --</option>';
             
             querySnapshot.forEach((doc) => {
-                select.innerHTML += `<option value="${doc.data().nama}">${doc.data().nama}</option>`;
+                const nama = doc.data().nama;
+                if (nama) {
+                    options += `<option value="${nama}">${nama}</option>`;
+                }
             });
+            select.innerHTML = options;
+        }, (error) => {
+            console.error("Gagal memuat data ruangan:", error);
         });
     }
 
@@ -275,41 +330,55 @@
         
         db.collection("bmn_items").orderBy("waktu_input", "desc").onSnapshot((querySnapshot) => {
             items = [];
-            tbody.innerHTML = '';
             
             if (querySnapshot.empty) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada data barang</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Belum ada data barang</td></tr>';
                 return;
             }
 
+            let rowsHtml = '';
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                items.push({ id: doc.id, ...data }); // Simpan ke array global untuk edit
+                items.push({ id: doc.id, ...data });
 
-                tbody.innerHTML += `
+                const fotoHtml = data.foto 
+                    ? `<img src="${data.foto}" class="img-thumb" alt="Foto ${data.nama}">` 
+                    : `<span style="color:var(--text-light); font-size:12px;">Tanpa Foto</span>`;
+
+                rowsHtml += `
                     <tr>
+                        <td>${fotoHtml}</td>
                         <td>
-                            <strong>${data.nama}</strong><br>
-                            <small style="color:var(--text-light)">${data.merk}</small>
+                            <strong>${data.nama || '-'}</strong><br>
+                            <small style="color:var(--text-light)">${data.merk || '-'}</small>
                         </td>
-                        <td>${data.jumlah}</td>
+                        <td>${data.jumlah || 0}</td>
                         <td>
                             <span style="padding:3px 8px; border-radius:12px; font-size:12px; 
                                 ${data.kondisi === 'Baik' ? 'background:#d1fae5; color:#065f46;' : 
                                   data.kondisi === 'Rusak Ringan' ? 'background:#fef3c7; color:#92400e;' : 
                                   'background:#fee2e2; color:#b91c1c;'}">
-                                ${data.kondisi}
+                                ${data.kondisi || '-'}
                             </span>
                         </td>
-                        <td><strong>${data.ruangan}</strong></td>
+                        <td><strong>${data.ruangan || '-'}</strong></td>
                         <td>
-                            <button type="button" class="btn-edit" onclick="editItem('${doc.id}')" title="Edit Data">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
+                            <div class="action-btns">
+                                <button type="button" class="btn-edit" onclick="editItem('${doc.id}')" title="Edit Data">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button type="button" class="btn-danger" onclick="deleteItem('${doc.id}')" title="Hapus Data">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
             });
+            tbody.innerHTML = rowsHtml;
+        }, (error) => {
+            console.error("Gagal memuat data barang:", error);
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Gagal memuat data dari database.</td></tr>';
         });
     }
 
@@ -319,29 +388,53 @@
     function editItem(docId) {
         const item = items.find(i => i.id === docId);
         if (item) {
-            // Isi form dengan data yang ada di database
             document.getElementById('itemId').value = item.id;
-            document.getElementById('inputNamaBarang').value = item.nama;
-            document.getElementById('inputMerkBarang').value = item.merk;
-            document.getElementById('inputJumlahBarang').value = item.jumlah;
-            document.getElementById('ruanganSelect').value = item.ruangan;
-            document.getElementById('inputKondisi').value = item.kondisi;
+            document.getElementById('inputNamaBarang').value = item.nama || '';
+            document.getElementById('inputMerkBarang').value = item.merk || '';
+            document.getElementById('inputJumlahBarang').value = item.jumlah || 1;
+            document.getElementById('ruanganSelect').value = item.ruangan || '';
+            document.getElementById('inputKondisi').value = item.kondisi || 'Baik';
             
-            // Ubah tombol submit menjadi mode update
+            // Tampilkan preview foto jika ada
+            if (item.foto) {
+                document.getElementById('imgPreview').src = item.foto;
+                document.getElementById('previewBox').style.display = 'flex';
+            } else {
+                document.getElementById('previewBox').style.display = 'none';
+            }
+            
             const btnSubmit = document.getElementById('btnSubmit');
             btnSubmit.innerHTML = '<i class="fas fa-save"></i> Update Data Barang';
             btnSubmit.classList.replace('btn-primary', 'btn-edit');
             
-            // Scroll layar otomatis ke atas (ke arah form)
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 
     // ==========================================
-    // 6. FUNGSI MENYIMPAN / MENGUPDATE BARANG
+    // 6. FUNGSI HAPUS BARANG
+    // ==========================================
+    function deleteItem(docId) {
+        if (confirm("Apakah Anda yakin ingin menghapus barang ini dari sistem?")) {
+            db.collection("bmn_items").doc(docId).delete()
+            .then(() => {
+                alert("Barang berhasil dihapus!");
+                if (document.getElementById('itemId').value === docId) {
+                    resetFormBarang();
+                }
+            })
+            .catch(error => {
+                alert("Gagal menghapus data!");
+                console.error("Error deleting document: ", error);
+            });
+        }
+    }
+
+    // ==========================================
+    // 7. FUNGSI MENYIMPAN / MENGUPDATE BARANG
     // ==========================================
     function handleSaveItem(e) {
-        e.preventDefault(); // Mencegah reload halaman
+        e.preventDefault();
 
         const btnSubmit = document.getElementById('btnSubmit');
         btnSubmit.disabled = true;
@@ -354,7 +447,6 @@
         const ruangan = document.getElementById('ruanganSelect').value;
         const kondisi = document.getElementById('inputKondisi').value;
 
-        // Susun data
         let dataToSave = {
             nama: namaBarang,
             merk: merkBarang,
@@ -367,7 +459,6 @@
             dataToSave.foto = base64Foto;
         }
 
-        // CEK APAKAH INI EDIT ATAU BARU
         if (itemId) {
             // PROSES UPDATE DATA (EDIT)
             db.collection("bmn_items").doc(itemId).update(dataToSave)
@@ -376,8 +467,9 @@
                 resetFormBarang();
             }).catch(error => { 
                 alert("Gagal update data!"); 
-                console.error(error); 
-                resetFormBarang(); // Kembalikan state tombol
+                console.error("Error updating document: ", error); 
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<i class="fas fa-save"></i> Update Data Barang';
             });
         } else {
             // PROSES TAMBAH DATA BARU
@@ -388,19 +480,22 @@
                 resetFormBarang();
             }).catch(error => { 
                 alert("Gagal menyimpan data!"); 
-                console.error(error);
-                resetFormBarang(); // Kembalikan state tombol
+                console.error("Error adding document: ", error);
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<i class="fas fa-save"></i> Simpan Data Barang';
             });
         }
     }
 
     // ==========================================
-    // 7. FUNGSI RESET FORM KEMBALI KE AWAL
+    // 8. FUNGSI RESET FORM KEMBALI KE AWAL
     // ==========================================
     function resetFormBarang() {
         document.getElementById('bmnForm').reset();
         document.getElementById('itemId').value = '';
         document.getElementById('file-status').style.display = 'none';
+        document.getElementById('previewBox').style.display = 'none';
+        document.getElementById('imgPreview').src = '';
         base64Foto = "";
         
         const btnSubmit = document.getElementById('btnSubmit');
@@ -411,13 +506,12 @@
     }
 
     // ==========================================
-    // 8. JALANKAN FUNGSI SAAT HALAMAN DIBUKA
+    // 9. JALANKAN FUNGSI SAAT HALAMAN DIBUKA
     // ==========================================
     window.onload = function() {
         loadRuanganFromFirebase();
         loadItemsDataFromFirebase();
     };
-
 </script>
 </body>
 </html>
