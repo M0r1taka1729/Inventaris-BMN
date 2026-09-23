@@ -80,41 +80,14 @@
             font-size: 14px;
         }
 
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-edit {
-            background-color: var(--warning);
-            color: white;
-        }
-
-        .btn-edit:hover {
-            background-color: #d97706;
-        }
-
-        .btn-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: var(--danger-hover);
-        }
-
-        .btn-secondary {
-            background-color: #6b7280;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #4b5563;
-        }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-edit { background-color: var(--warning); color: white; }
+        .btn-edit:hover { background-color: #d97706; }
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-danger:hover { background-color: var(--danger-hover); }
+        .btn-secondary { background-color: #6b7280; color: white; }
+        .btn-secondary:hover { background-color: #4b5563; }
 
         .action-btns {
             display: flex;
@@ -164,6 +137,116 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        /* ========================================= */
+        /* TAMBAHAN STYLING UNTUK FITUR CETAK / PDF  */
+        /* ========================================= */
+        
+        /* Tombol Mengambang (Floating Action Button) */
+        .fab-print {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #dc2626; /* Merah PDF */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        .fab-print:hover {
+            transform: translateY(-5px);
+            background-color: #b91c1c;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+
+        /* Modal / Kolom Mengambang Pilihan Cetak */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+        .close-modal {
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--text-light);
+            transition: 0.2s;
+        }
+        .close-modal:hover { color: var(--danger); }
+
+        /* Sembunyikan Area Cetak di Layar Normal */
+        #printArea {
+            display: none;
+        }
+
+        /* Aturan CSS Khusus Saat Mode Cetak (Ctrl+P / Save as PDF) */
+        @media print {
+            body * {
+                visibility: hidden; /* Sembunyikan semua elemen web */
+            }
+            #printArea, #printArea * {
+                visibility: visible; /* Tampilkan hanya area cetak */
+            }
+            #printArea {
+                display: block;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            /* Hilangkan tombol mengambang saat dicetak */
+            .fab-print, .modal-overlay { 
+                display: none !important; 
+            }
+            /* Styling tabel untuk PDF */
+            #printArea table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                font-size: 14px;
+            }
+            #printArea th, #printArea td {
+                border: 1px solid #000 !important;
+                padding: 8px 12px;
+                text-align: left;
+            }
+            #printArea th {
+                background-color: #f3f4f6 !important;
+                -webkit-print-color-adjust: exact;
+            }
         }
     </style>
 </head>
@@ -266,12 +349,51 @@
             </tbody>
         </table>
     </div>
-
 </div>
 
-<!-- Firebase App (the core Firebase SDK) -->
+<!-- ========================================= -->
+<!-- ELEMEN TAMBAHAN UNTUK FITUR CETAK PDF     -->
+<!-- ========================================= -->
+
+<!-- Tombol Mengambang di Kanan Bawah -->
+<div class="fab-print" onclick="openModalCetak()">
+    <i class="fas fa-print"></i> Cetak PDF
+</div>
+
+<!-- Kolom Mengambang (Modal) Pilihan Cetak -->
+<div class="modal-overlay" id="modalCetak">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="margin:0; color: var(--text);"><i class="fas fa-file-pdf" style="color:#dc2626;"></i> Pengaturan Cetak PDF</h3>
+            <span class="close-modal" onclick="closeModalCetak()">&times;</span>
+        </div>
+        
+        <div class="form-group">
+            <label for="selectRuanganCetak">Pilih Ruangan yang akan dicetak:</label>
+            <select id="selectRuanganCetak" class="form-control">
+                <option value="Semua">-- Semua Ruangan --</option>
+                <!-- Opsi akan diisi otomatis oleh JavaScript -->
+            </select>
+        </div>
+        
+        <p style="font-size: 12px; color: var(--text-light); margin-bottom: 20px;">
+            <i class="fas fa-info-circle"></i> Tips: Saat jendela cetak terbuka, pilih opsi "Save as PDF" (Simpan sebagai PDF) pada bagian Destination / Printer.
+        </p>
+
+        <button type="button" class="btn-primary" style="width: 100%; justify-content: center; font-size: 16px; padding: 12px;" onclick="eksekusiCetak()">
+            <i class="fas fa-print"></i> Buat Laporan & Cetak
+        </button>
+    </div>
+</div>
+
+<!-- Area Khusus yang Hanya Muncul Saat Dokumen Dicetak -->
+<div id="printArea">
+    <!-- Konten HTML cetakan akan di-generate otomatis oleh JavaScript kesini -->
+</div>
+
+
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<!-- Firebase Firestore -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
@@ -279,7 +401,7 @@
     // 1. KONFIGURASI FIREBASE
     // ==========================================
     const firebaseConfig = {
-        apiKey: "AIzaSyB0qOgDA7xq1hP5KkuDyFf8nAJyFAMvkRc", // Ganti dengan Web API Key dari Firebase Console
+        apiKey: "AIzaSyB0qOgDA7xq1hP5KkuDyFf8nAJyFAMvkRc",
         authDomain: "bmn-lapas-arma.firebaseapp.com",
         projectId: "bmn-lapas-arma",
         storageBucket: "bmn-lapas-arma.firebasestorage.app",
@@ -287,7 +409,6 @@
         appId: "1:928672297876:web:418f0f959d105b1fe5d581"
     };
 
-    // Inisialisasi Firebase
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
@@ -297,10 +418,9 @@
     // 2. VARIABEL GLOBAL & EVENT LISTENER
     // ==========================================
     let base64Foto = "";
-    let items = []; // Menyimpan data sementara untuk fungsi edit dan filter
+    let items = []; 
 
-    // Konversi gambar ke base64 saat file dipilih
-    // Konversi dan KOMPRESI gambar ke base64 saat file dipilih
+    // Konversi dan KOMPRESI gambar ke base64
     document.getElementById('inputFoto').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -308,15 +428,13 @@
             reader.onload = function(event) {
                 const img = new Image();
                 img.onload = function() {
-                    // Buat elemen canvas virtual untuk memperkecil gambar
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800;  // Batas maksimal lebar foto (pixel)
-                    const MAX_HEIGHT = 800; // Batas maksimal tinggi foto (pixel)
+                    const MAX_WIDTH = 800;  
+                    const MAX_HEIGHT = 800; 
                     
                     let width = img.width;
                     let height = img.height;
 
-                    // Hitung rasio aspek untuk mempertahankan bentuk asli foto
                     if (width > height) {
                         if (width > MAX_WIDTH) {
                             height = Math.round(height *= MAX_WIDTH / width);
@@ -329,14 +447,11 @@
                         }
                     }
 
-                    // Terapkan ukuran baru ke canvas
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Konversi gambar di canvas menjadi base64 dengan format JPEG dan kualitas 60%
-                    // Ini akan memangkas ukuran file drastis dari MB menjadi puluhan/ratusan KB saja
                     base64Foto = canvas.toDataURL('image/jpeg', 0.6);
                     
                     document.getElementById('file-status').style.display = 'block';
@@ -351,16 +466,18 @@
     });
 
     // ==========================================
-    // 3. MEMUAT DATA RUANGAN (FORM & FILTER)
+    // 3. MEMUAT DATA RUANGAN (FORM & FILTER & CETAK)
     // ==========================================
     function loadRuanganFromFirebase() {
         db.collection("bmn_rooms").onSnapshot((querySnapshot) => {
             const selectForm = document.getElementById('ruanganSelect');
             const selectFilter = document.getElementById('filterRuangan');
+            const selectCetak = document.getElementById('selectRuanganCetak'); // Tambahan untuk Modal Cetak
             
             if (querySnapshot.empty) {
                 selectForm.innerHTML = '<option value="">-- Data Ruangan Kosong --</option>';
                 selectFilter.innerHTML = '<option value="Semua">-- Semua Ruangan --</option>';
+                selectCetak.innerHTML = '<option value="Semua">-- Semua Ruangan --</option>';
                 return;
             }
 
@@ -376,7 +493,6 @@
                 }
             });
 
-            // Urutkan nama ruangan A-Z
             listRuangan.sort((a, b) => a.localeCompare(b));
 
             listRuangan.forEach((nama) => {
@@ -386,12 +502,15 @@
 
             selectForm.innerHTML = optionsForm;
             
-            // Pertahankan nilai filter yang sedang aktif jika ada
             const currentFilterValue = selectFilter.value;
             selectFilter.innerHTML = optionsFilter;
             if (listRuangan.includes(currentFilterValue)) {
                 selectFilter.value = currentFilterValue;
             }
+            
+            // Masukkan list ke modal cetak juga
+            selectCetak.innerHTML = optionsFilter; 
+            
         }, (error) => {
             console.error("Gagal memuat data dari bmn_rooms:", error);
             alert("Gagal memuat data ruangan: " + error.message);
@@ -403,15 +522,11 @@
     // ==========================================
     function loadItemsDataFromFirebase() {
         db.collection("bmn_items").orderBy("waktu_input", "desc").onSnapshot((querySnapshot) => {
-            items = []; // Reset array global
-            
+            items = []; 
             querySnapshot.forEach((doc) => {
                 items.push({ id: doc.id, ...doc.data() });
             });
-            
-            // Render ulang tabel
             renderTable();
-            
         }, (error) => {
             console.error("Gagal memuat data barang:", error);
             document.querySelector('#itemTable tbody').innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Gagal memuat data dari database.</td></tr>';
@@ -425,13 +540,11 @@
         const tbody = document.querySelector('#itemTable tbody');
         const filterValue = document.getElementById('filterRuangan').value;
         
-        // Logika Filter
         let filteredItems = items;
         if (filterValue !== "Semua") {
             filteredItems = items.filter(item => item.ruangan === filterValue);
         }
 
-        // Tampilan jika data kosong
         if (filteredItems.length === 0) {
             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada data barang ${filterValue !== 'Semua' ? 'di ruangan <b>' + filterValue + '</b>' : ''}</td></tr>`;
             return;
@@ -477,7 +590,100 @@
     }
 
     // ==========================================
-    // 6. MENYIAPKAN FORM EDIT
+    // 6. FITUR CETAK PDF (BARU)
+    // ==========================================
+    function openModalCetak() {
+        document.getElementById('modalCetak').style.display = 'flex';
+    }
+
+    function closeModalCetak() {
+        document.getElementById('modalCetak').style.display = 'none';
+    }
+
+    function eksekusiCetak() {
+        const ruanganDipilih = document.getElementById('selectRuanganCetak').value;
+        const printArea = document.getElementById('printArea');
+        
+        // Filter data berdasarkan ruangan yang dipilih
+        let dataDicetak = items;
+        if (ruanganDipilih !== "Semua") {
+            dataDicetak = items.filter(item => item.ruangan === ruanganDipilih);
+        }
+
+        // Dapatkan tanggal hari ini untuk kop laporan
+        const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+        const tanggalHariIni = new Date().toLocaleDateString('id-ID', dateOptions);
+
+        // Bangun struktur HTML khusus cetak (Format Laporan Resmi)
+        let htmlCetak = `
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="margin: 0;">DAFTAR BARANG MILIK NEGARA (BMN)</h2>
+                <h3 style="margin: 5px 0;">LEMBAGA PEMASYARAKATAN KELAS IIB ARGA MAKMUR</h3>
+                <p style="margin: 5px 0; font-size: 16px;">
+                    Lokasi Ruangan: <strong>${ruanganDipilih === 'Semua' ? 'Keseluruhan (Semua Ruangan)' : ruanganDipilih}</strong>
+                </p>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 5%; text-align: center;">No</th>
+                        <th style="width: 35%;">Nama Barang</th>
+                        <th style="width: 25%;">Merk / Tipe</th>
+                        <th style="width: 10%; text-align: center;">Jumlah</th>
+                        <th style="width: 15%;">Kondisi</th>
+                        <th style="width: 10%;">Ruangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        if (dataDicetak.length === 0) {
+            htmlCetak += `<tr><td colspan="6" style="text-align:center; padding: 20px;">Tidak ada data barang di ruangan ini.</td></tr>`;
+        } else {
+            dataDicetak.forEach((data, index) => {
+                htmlCetak += `
+                    <tr>
+                        <td style="text-align: center;">${index + 1}</td>
+                        <td><strong>${data.nama || '-'}</strong></td>
+                        <td>${data.merk || '-'}</td>
+                        <td style="text-align: center;">${data.jumlah || 0}</td>
+                        <td>${data.kondisi || '-'}</td>
+                        <td>${data.ruangan || '-'}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        htmlCetak += `
+                </tbody>
+            </table>
+            
+            <!-- Kolom Tanda Tangan -->
+            <div style="margin-top: 50px; display: flex; justify-content: flex-end;">
+                <div style="text-align: center; width: 300px;">
+                    <p>Arga Makmur, ${tanggalHariIni}</p>
+                    <p style="margin-bottom: 80px;">Mengetahui,<br>Pengurus Barang / BMN</p>
+                    <p><strong>________________________________</strong><br>NIP.</p>
+                </div>
+            </div>
+        `;
+
+        // Masukkan HTML ke div khusus print
+        printArea.innerHTML = htmlCetak;
+        
+        // Tutup modal
+        closeModalCetak();
+        
+        // Panggil fungsi print bawaan browser
+        // Delay sedikit agar browser merender tabel printArea terlebih dahulu
+        setTimeout(() => {
+            window.print();
+        }, 300);
+    }
+
+    // ==========================================
+    // 7. MENYIAPKAN FORM EDIT
     // ==========================================
     function editItem(docId) {
         const item = items.find(i => i.id === docId);
@@ -505,7 +711,7 @@
     }
 
     // ==========================================
-    // 7. MENGAHUS BARANG
+    // 8. MENGHAPUS BARANG
     // ==========================================
     function deleteItem(docId) {
         if (confirm("Apakah Anda yakin ingin menghapus barang ini dari sistem?")) {
@@ -524,7 +730,7 @@
     }
 
     // ==========================================
-    // 8. MENYIMPAN / MENGUPDATE BARANG
+    // 9. MENYIMPAN / MENGUPDATE BARANG
     // ==========================================
     function handleSaveItem(e) {
         e.preventDefault();
@@ -553,19 +759,16 @@
         }
 
         if (itemId) {
-            // EDIT / UPDATE DATA
             db.collection("bmn_items").doc(itemId).update(dataToSave)
             .then(() => {
                 alert("Perubahan data berhasil disimpan!");
                 resetFormBarang();
             }).catch(error => { 
                 alert("Gagal update data!"); 
-                console.error("Error updating document: ", error); 
                 btnSubmit.disabled = false;
                 btnSubmit.innerHTML = '<i class="fas fa-save"></i> Update Data Barang';
             });
         } else {
-            // TAMBAH DATA BARU
             dataToSave.waktu_input = firebase.firestore.FieldValue.serverTimestamp();
             db.collection("bmn_items").add(dataToSave)
             .then(() => {
@@ -573,7 +776,6 @@
                 resetFormBarang();
             }).catch(error => { 
                 alert("Gagal menyimpan data!"); 
-                console.error("Error adding document: ", error);
                 btnSubmit.disabled = false;
                 btnSubmit.innerHTML = '<i class="fas fa-save"></i> Simpan Data Barang';
             });
@@ -581,7 +783,7 @@
     }
 
     // ==========================================
-    // 9. RESET FORM
+    // 10. RESET FORM
     // ==========================================
     function resetFormBarang() {
         document.getElementById('bmnForm').reset();
@@ -599,7 +801,7 @@
     }
 
     // ==========================================
-    // 10. JALANKAN SAAT HALAMAN DIBUKA
+    // 11. JALANKAN SAAT HALAMAN DIBUKA
     // ==========================================
     window.onload = function() {
         loadRuanganFromFirebase();
