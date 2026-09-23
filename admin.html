@@ -300,15 +300,51 @@
     let items = []; // Menyimpan data sementara untuk fungsi edit dan filter
 
     // Konversi gambar ke base64 saat file dipilih
+    // Konversi dan KOMPRESI gambar ke base64 saat file dipilih
     document.getElementById('inputFoto').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                base64Foto = event.target.result;
-                document.getElementById('file-status').style.display = 'block';
-                document.getElementById('imgPreview').src = base64Foto;
-                document.getElementById('previewBox').style.display = 'flex';
+                const img = new Image();
+                img.onload = function() {
+                    // Buat elemen canvas virtual untuk memperkecil gambar
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;  // Batas maksimal lebar foto (pixel)
+                    const MAX_HEIGHT = 800; // Batas maksimal tinggi foto (pixel)
+                    
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Hitung rasio aspek untuk mempertahankan bentuk asli foto
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height = Math.round(height *= MAX_WIDTH / width);
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width = Math.round(width *= MAX_HEIGHT / height);
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    // Terapkan ukuran baru ke canvas
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Konversi gambar di canvas menjadi base64 dengan format JPEG dan kualitas 60%
+                    // Ini akan memangkas ukuran file drastis dari MB menjadi puluhan/ratusan KB saja
+                    base64Foto = canvas.toDataURL('image/jpeg', 0.6);
+                    
+                    document.getElementById('file-status').style.display = 'block';
+                    document.getElementById('file-status').innerHTML = '<i class="fas fa-check-circle"></i> Foto berhasil dikompresi dan siap disimpan';
+                    document.getElementById('imgPreview').src = base64Foto;
+                    document.getElementById('previewBox').style.display = 'flex';
+                };
+                img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         }
